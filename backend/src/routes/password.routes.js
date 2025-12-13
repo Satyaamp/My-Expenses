@@ -17,8 +17,8 @@ const transporter = nodemailer.createTransport({
   port: 587, // Use 587 for STARTTLS (more reliable on cloud)
   secure: false, 
   auth: {
-    user: process.env.EMAIL_USER, // Ensure these are in your .env file
-    pass: process.env.EMAIL_PASS,
+    user: process.env.EMAIL_USER ? process.env.EMAIL_USER.trim() : "",
+    pass: process.env.EMAIL_PASS ? process.env.EMAIL_PASS.trim() : "",
   },
   tls: {
     rejectUnauthorized: false // Helps prevent handshake errors on some networks
@@ -26,7 +26,10 @@ const transporter = nodemailer.createTransport({
   // Add timeouts to prevent infinite spinning
   connectionTimeout: 10000, // 10 seconds
   greetingTimeout: 10000,
-  socketTimeout: 10000
+  socketTimeout: 10000,
+  logger: true, // Enable logging to see detailed errors on Render
+  debug: true,  // Enable debug output
+  family: 4     // Force IPv4 (Fixes timeouts on some cloud providers)
 });
 
 // 1. Forgot Password Route
