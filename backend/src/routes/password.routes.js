@@ -14,26 +14,37 @@ if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
-  port: 465,
-  secure: true, // true for 465, false for other ports
+  port: 587, // Use 587 for STARTTLS (more reliable on cloud)
+  secure: false, 
   auth: {
     user: process.env.EMAIL_USER, // Ensure these are in your .env file
     pass: process.env.EMAIL_PASS,
   },
+  tls: {
+    rejectUnauthorized: false // Helps prevent handshake errors on some networks
+  },
+  // Add timeouts to prevent infinite spinning
+  connectionTimeout: 10000, // 10 seconds
+  greetingTimeout: 10000,
+  socketTimeout: 10000
 });
 
 // 1. Forgot Password Route
 router.post('/forgot-password', async (req, res) => {
+  console.log("📩 Forgot password request for:", req.body.email);
   const { email } = req.body;
+  let user; // Define user here so it's accessible in catch block
 
   try {
-    const user = await User.findOne({ email });
+    user = await User.findOne({ email });
     if (!user) {
+      console.log("❌ User not found:", email);
       return res.status(404).json({ message: 'User not found' });
     }
 
     // Check if a valid token already exists to prevent spam
     if (user.resetPasswordExpires && user.resetPasswordExpires > Date.now()) {
+      console.log("⚠️ Token already active for:", email);
       return res.status(429).json({ message: 'A reset link is already active. Please check your email or wait 5 minutes.' });
     }
 
@@ -101,9 +112,11 @@ router.post('/forgot-password', async (req, res) => {
     console.error("❌ Email Send Error:", err);
 
     // If email fails, clear the token so the user can try again immediately
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpires = undefined;
-    await user.save().catch(e => console.error("Failed to rollback user token", e));
+    if (user) {
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+      await user.save().catch(e => console.error("Failed to rollback user token", e));
+    }
 
     // Send the actual error message to the frontend
     res.status(500).json({ message: err.message || 'Error sending email' });
