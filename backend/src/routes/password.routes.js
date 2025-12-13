@@ -1,33 +1,11 @@
 const express = require('express');
 require('dotenv').config();
 const crypto = require('crypto');
-const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user.model');
+const { sendEmail } = require('../utils/sendEmail');
 
 const router = express.Router();
-
-// Configure Email Transporter (Update with your credentials)
-if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-  console.error("❌ Error: EMAIL_USER or EMAIL_PASS missing in .env file");
-}
-
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_USER ? process.env.EMAIL_USER.trim() : "",
-    pass: process.env.EMAIL_PASS ? process.env.EMAIL_PASS.trim() : "",
-  },
-  // Add timeouts to prevent infinite spinning
-  connectionTimeout: 20000,
-  greetingTimeout: 20000,
-  socketTimeout: 20000,
-  logger: true, // Enable logging to see detailed errors on Render
-  debug: true,  // Enable debug output
-  family: 4     // Force IPv4 (Fixes timeouts on some cloud providers)
-});
 
 // 1. Forgot Password Route
 router.post('/forgot-password', async (req, res) => {
@@ -64,11 +42,11 @@ router.post('/forgot-password', async (req, res) => {
     const logoUrl = `${clientUrl}/assets/logo1.png`;
     const bannerUrl = `${clientUrl}/assets/banner.png`;
 
-    const mailOptions = {
+    await sendEmail({
       to: user.email,
-      from: process.env.EMAIL_USER,
       subject: 'Password Reset Request',
-      text: `Hello ${user.name},\n\n
+      // Fallback text
+      text: `Hello ${user.name},\n\n 
       We received a request to reset your password for DhanRekha.\n
       Please click the link below to choose a new password:\n\n
       ${resetUrl}\n\n
@@ -103,9 +81,8 @@ router.post('/forgot-password', async (req, res) => {
           </div>
         </div>
       `
-    };
+    });
 
-    await transporter.sendMail(mailOptions);
     res.status(200).json({ message: 'Email sent successfully' });
 
   } catch (err) {
