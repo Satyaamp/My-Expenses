@@ -6,10 +6,10 @@ exports.create = async (req, res) =>
   success(res, await service.createExpense(req.user.id, req.body));
 
 exports.weekly = async (req, res) =>
-  success(res, await service.getWeekly(req.user.id));
+  success(res, await service.getWeekly(req.user.id, req.query.startDate, req.query.endDate));
 
 exports.summary = async (req, res) =>
-  success(res, await service.categorySummary(req.user.id));
+  success(res, await service.categorySummary(req.user.id, req.query.startDate, req.query.endDate));
 
 exports.balance = async (req, res) => {
   const data = await service.getRemainingBalance(req.user.id);
@@ -68,7 +68,7 @@ exports.addBulkExpenses = async (req, res) => {
 
 
 exports.getAll = async (req, res) => {
-  const expenses = await service.getAllExpenses(req.user.id);
+  const expenses = await service.getAllExpenses(req.user.id, req.query.startDate, req.query.endDate);
   success(res, expenses, 'Expenses fetched successfully');
 };
 

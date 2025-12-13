@@ -1,147 +1,10 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-  min-height: 100vh;
-  color: white;
-  padding-bottom: 40px;
-  
-}
-
-
-
-.tagline {
-  font-size: 13px;
-  font-weight: 400;
-  opacity: 0.7;
-  color: white;
-  background: none;
-  -webkit-text-fill-color: white;
-  margin-top: 4px;
-  letter-spacing: 0.3px;
-}
-
-.glass-header { 
-  width: 100%;
-  
-  top: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 26px 36px;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-
-.glass-header.scrolled {
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(18px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-}
-
-
-/* ===== SHINING HEADER BUTTON ===== */
-
-.btn-shine {
-  position: relative;
-  padding: 12px 22px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #22c55e;
-  text-decoration: none;
-  border-radius: 14px;
-  border: 1px solid rgba(34, 197, 94, 0.5);
-  background: rgba(34, 197, 94, 0.08);
-  backdrop-filter: blur(10px);
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-/* Shine animation layer */
-.btn-shine::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -120%;
-  width: 120%;
-  height: 100%;
-  background: linear-gradient(
-    120deg,
-    transparent,
-    rgba(255, 255, 255, 0.6),
-    transparent
-  );
-  transition: all 0.6s ease;
-}
-
-/* Hover effects */
-.btn-shine:hover {
-  color: #ffffff;
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  border-color: #22c55e;
-  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.45);
-  transform: translateY(-2px);
-}
-
-.btn-shine:hover::before {
-  left: 120%;
-}
-
-/* Subtle pulse animation */
-@keyframes glowPulse {
-  0%, 100% {
-    box-shadow: 0 0 0 rgba(34, 197, 94, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 18px rgba(34, 197, 94, 0.6);
-  }
-}
-
-.btn-shine {
-  animation: glowPulse 3s infinite;
-}
-
-
-/* Left */
-.header-left h2 {
-  margin: 0;
-  font-size: 36px;
-  color: #22c55e;
-}
-
-/* Center */
-.header-center {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-}
-
+/* Month Picker Styling */
 #monthPicker {
   padding: 14px 20px;
   border-radius: 10px;
   background: rgba(255,255,255,0.08);
   color: #fff;
   border: 1px solid rgba(255,255,255,0.15);
-}
-
-/* Right logo */
-.header-right {
-  display: flex;
-  align-items: center;
-}
-
-.logo {
-  height: 52px;
-  width: auto;
-  border-radius: 50%;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
 }
 
 
@@ -157,99 +20,10 @@ body {
   box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.1);
 }
 
-.summary {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
-  padding: 20px;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-.card {
-  padding: 24px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #34d399, #10b981);
-  transform: scaleX(0);
-  transition: transform 0.3s ease;
-}
-
-.card:hover::before {
-  transform: scaleX(1);
-}
-
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-  border-color: rgba(52, 211, 153, 0.3);
-}
-
-.card h4 {
-  font-size: 14px;
-  font-weight: 500;
-  opacity: 0.7;
-  margin-bottom: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.card p {
-  font-size: 32px;
-  font-weight: 700;
-  color: #34d399;
-}
-
-.card:nth-child(2) p {
-  color: #f87171;
-}
-
-.card:nth-child(3) p {
-  color: #60a5fa;
-}
-
-.expense-list {
-  padding: 20px;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-.expense-list h3 {
-  font-size: 22px;
-  margin-bottom: 20px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 28px;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.expense-list h3::before {
-  content: '';
-  width: 4px;
-  height: 24px;
-  background: linear-gradient(180deg, #34d399, #10b981);
-  border-radius: 2px;
-}
-
+/* 
+   Specific list styles for monthly view 
+   (inherits container from dashboard.css .expense-list)
+*/
 .expense-list ul {
   list-style: none;
   background: rgba(255, 255, 255, 0.05);
@@ -279,34 +53,6 @@ body {
 
 .expense-list li:last-child {
   margin-bottom: 0;
-}
-
-.date-wise {
-  padding: 20px;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-.date-wise h3 {
-  font-size: 22px;
-  margin-bottom: 20px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 28px;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.date-wise h3::before {
-  content: '';
-  width: 4px;
-  height: 24px;
-  background: linear-gradient(180deg, #34d399, #10b981);
-  border-radius: 2px;
 }
 
 /* Calendar Container */
@@ -521,20 +267,6 @@ body {
 
 /* Mobile Design - Tabs Layout */
 @media (max-width: 768px) {
-  .summary {
-    grid-template-columns: 1fr;
-  }
-  
-  .card p {
-    font-size: 28px;
-  }
-  
-  .expense-list h3,
-  .date-wise h3 {
-    padding: 20px;
-    font-size: 20px;
-  }
-  
   .expense-list ul {
     padding: 20px;
   }
@@ -619,12 +351,3 @@ body {
     padding: 3px 8px;
   }
 }
-
-.footer-banner img {
-      max-width: 500px;
-      width: 100%;
-      height: auto;
-      border-radius: 16px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-      border: 2px solid rgba(255,255,255,0.1);
-  }

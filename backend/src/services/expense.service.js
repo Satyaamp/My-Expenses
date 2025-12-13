@@ -18,9 +18,24 @@ exports.createExpense = async (userId, data) => {
 
 
 // ---------------- WEEKLY EXPENSE ----------------
-exports.getWeekly = async (userId) => {
+exports.getWeekly = async (userId, startDate, endDate) => {
   const uid = new mongoose.Types.ObjectId(userId);
 
+  let query = { userId: uid };
+
+  if (startDate || endDate) {
+    query.date = {};
+    if (startDate) query.date.$gte = new Date(startDate);
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      query.date.$lte = end;
+    }
+    // If date range is provided, return all matching data (for charts)
+    return Expense.find(query).sort({ date: -1 });
+  }
+
+  // Default: Last 7 days, limit 3 (for Recent Expenses list)
   return Expense.find({
     userId: uid,
     date: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
@@ -32,11 +47,23 @@ exports.getWeekly = async (userId) => {
 
 
 // ---------------- CATEGORY SUMMARY ----------------
-exports.categorySummary = async (userId) => {
+exports.categorySummary = async (userId, startDate, endDate) => {
   const uid = new mongoose.Types.ObjectId(userId);
 
+  const matchStage = { userId: uid };
+
+  if (startDate || endDate) {
+    matchStage.date = {};
+    if (startDate) matchStage.date.$gte = new Date(startDate);
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      matchStage.date.$lte = end;
+    }
+  }
+
   return Expense.aggregate([
-    { $match: { userId: uid } },
+    { $match: matchStage },
     {
       $group: {
         _id: '$category',
@@ -148,8 +175,20 @@ exports.deleteExpense = async (userId, expenseId) => {
 };
 
 // ---------------- GET ALL EXPENSES ----------------
-exports.getAllExpenses = async (userId) => {
-  return Expense.find({ userId })
+exports.getAllExpenses = async (userId, startDate, endDate) => {
+  const query = { userId };
+
+  if (startDate || endDate) {
+    query.date = {};
+    if (startDate) query.date.$gte = new Date(startDate);
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      query.date.$lte = end;
+    }
+  }
+
+  return Expense.find(query)
     .sort({ date: -1 }); // latest first
 };
 

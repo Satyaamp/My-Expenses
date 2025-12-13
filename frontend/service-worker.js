@@ -1,4 +1,4 @@
-const CACHE_NAME = "dhanrekha-v3";
+const CACHE_NAME = "dhanrekha-v4";
 
 const STATIC_ASSETS = [
   "/",
@@ -9,14 +9,20 @@ const STATIC_ASSETS = [
   "/monthly.html",
 
   "/css/index.css",
+  "/css/glass.css",
   "/css/dashboard.css",
   "/css/monthly.css",
 
+  "/js/api.js",
+  "/js/authGuard.js",
   "/js/home.js",
+  "/js/auth.js",
+  "/js/signup.js",
   "/js/dashboard.js",
   "/js/monthly.js",
 
-  "/assets/logo1.png"
+  "/assets/logo1.png",
+  "/assets/banner.png"
 ];
 
 // INSTALL

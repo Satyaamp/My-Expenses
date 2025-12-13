@@ -2,31 +2,155 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>DhanRekha – Sign Up</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up - DhanRekha</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#22c55e">
   <link rel="stylesheet" href="css/glass.css" />
-  <link rel="stylesheet" href="css/auth.css" />
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .auth-container {
+      width: 100%;
+      max-width: 400px;
+      padding: 40px;
+      text-align: center;
+    }
+    .logo {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    h2 {
+      margin-bottom: 30px;
+      font-weight: 600;
+    }
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.05);
+      color: white;
+      font-size: 1rem;
+      outline: none;
+      box-sizing: border-box;
+    }
+    .form-group input:focus {
+      border-color: #22c55e;
+      background: rgba(255,255,255,0.1);
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #22c55e;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: transform 0.2s;
+    }
+    button:hover {
+      background: #16a34a;
+      transform: translateY(-2px);
+    }
+    .links {
+      margin-top: 24px;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+    .links a {
+      color: #22c55e;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .links a:hover {
+      text-decoration: underline;
+    }
+    .password-wrapper {
+      position: relative;
+    }
+    .password-wrapper input {
+      padding-right: 40px;
+    }
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 1.2rem;
+      opacity: 0.7;
+      user-select: none;
+    }
+  </style>
 </head>
 <body>
 
-  <div class="auth-container">
-    <form id="signupForm" class="glass-card">
-      <h1>DhanRekha</h1>
-      <p class="tagline">Create your account</p>
+  <div class="glass-card auth-container">
+    <img src="assets/logo1.png" alt="DhanRekha Logo" class="logo" />
+    <h2>Create Account</h2>
 
-      <input type="text" id="name" placeholder="Full Name" required />
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="password" placeholder="Password" required />
+    <form id="signupForm">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" placeholder="John Doe" required />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="name@example.com" required />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="password" placeholder="Create a password" required />
+          <span class="toggle-password" onclick="togglePassword()">👁️</span>
+        </div>
+      </div>
 
       <button type="submit">Sign Up</button>
-
-      <p class="link">
-        Already have an account?
-        <a href="login.html">Login</a>
-      </p>
     </form>
+
+    <div class="links">
+      <p>Already have an account? <a href="login.html">Login</a></p>
+      <p style="margin-top: 10px;"><a href="index.html">← Back to Home</a></p>
+    </div>
   </div>
 
+  <script>
+    function togglePassword() {
+      const passwordInput = document.getElementById('password');
+      const toggleIcon = document.querySelector('.toggle-password');
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.textContent = '🙈';
+      } else {
+        passwordInput.type = 'password';
+        toggleIcon.textContent = '👁️';
+      }
+    }
+  </script>
   <script type="module" src="js/signup.js"></script>
 </body>
 </html>

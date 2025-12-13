@@ -1,8 +1,40 @@
 import { apiRequest } from "./api.js";
 
+/* ===============================
+   DARK MODE TOGGLE
+================================ */
+const darkModeToggle = document.getElementById("darkModeToggle");
+const isLightMode = localStorage.getItem("theme") === "light";
+
+if (isLightMode) {
+  document.body.classList.add("light-mode");
+  if (darkModeToggle) darkModeToggle.innerText = "🌙";
+} else {
+  if (darkModeToggle) darkModeToggle.innerText = "☀️";
+}
+
+window.toggleDarkMode = function () {
+  document.body.classList.toggle("light-mode");
+  const isLight = document.body.classList.contains("light-mode");
+  localStorage.setItem("theme", isLight ? "light" : "dark");
+  const toggleBtn = document.getElementById("darkModeToggle");
+  if (toggleBtn) toggleBtn.innerText = isLight ? "🌙" : "☀️";
+};
+
 const picker = document.getElementById("monthPicker");
 let selectedDate = null;
 let currentMonthExpenses = [];
+
+// Inject styles for disabled dates
+const style = document.createElement('style');
+style.textContent = `
+  .calendar-day.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+`;
+document.head.appendChild(style);
 
 picker.addEventListener("change", loadMonthlyData);
 
@@ -82,6 +114,9 @@ function renderCalendar(year, month) {
   
   const daysInMonth = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfMonth(year, month);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
   
   const isMobile = window.innerWidth <= 768;
   
@@ -113,7 +148,10 @@ function renderCalendar(year, month) {
       const transactions = getTransactionsForDate(dateStr);
       const hasTransactions = transactions.length > 0 ? 'has-transactions' : '';
       
-      calendarHTML += `<div class="calendar-day ${hasTransactions}" data-date="${dateStr}">${day}</div>`;
+      const cellDate = new Date(year, month, day);
+      const disabledClass = cellDate > today ? 'disabled' : '';
+      
+      calendarHTML += `<div class="calendar-day ${hasTransactions} ${disabledClass}" data-date="${dateStr}">${day}</div>`;
     }
     
     calendarHTML += `
@@ -155,8 +193,11 @@ function renderCalendar(year, month) {
       const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const transactions = getTransactionsForDate(dateStr);
       const hasTransactions = transactions.length > 0 ? 'has-transactions' : '';
+
+      const cellDate = new Date(year, month, day);
+      const disabledClass = cellDate > today ? 'disabled' : '';
       
-      calendarHTML += `<div class="calendar-day ${hasTransactions}" data-date="${dateStr}">${day}</div>`;
+      calendarHTML += `<div class="calendar-day ${hasTransactions} ${disabledClass}" data-date="${dateStr}">${day}</div>`;
     }
     
     calendarHTML += `
@@ -182,6 +223,7 @@ function renderCalendar(year, month) {
   // Add click handlers to calendar days
   document.querySelectorAll('.calendar-day:not(.empty)').forEach(dayCell => {
     dayCell.addEventListener('click', () => {
+      if (dayCell.classList.contains('disabled')) return;
       const dateStr = dayCell.getAttribute('data-date');
       selectDate(dateStr, dayCell);
     });
@@ -263,3 +305,37 @@ function selectDate(dateStr, dayCell) {
       header.classList.remove('scrolled');
     }
   });
+
+/* ===============================
+   SWIPE GESTURE SUPPORT
+================================ */
+const calendarContainer = document.getElementById("dateWiseList");
+let touchStartX = 0;
+let touchEndX = 0;
+
+if (calendarContainer) {
+  calendarContainer.addEventListener('touchstart', e => {
+    // Only allow swipe on the calendar part
+    if (!e.target.closest('.calendar-view')) return;
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+
+  calendarContainer.addEventListener('touchend', e => {
+    if (!e.target.closest('.calendar-view')) return;
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+  }, { passive: true });
+}
+
+function handleSwipe() {
+  const threshold = 50; // Minimum distance to trigger swipe
+  if (touchEndX < touchStartX - threshold) changeMonth(1); // Swipe Left -> Next Month
+  if (touchEndX > touchStartX + threshold) changeMonth(-1); // Swipe Right -> Prev Month
+}
+
+function changeMonth(offset) {
+  const [year, month] = picker.value.split("-").map(Number);
+  const date = new Date(year, month - 1 + offset, 1);
+  picker.value = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+  loadMonthlyData();
+}

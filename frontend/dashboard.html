@@ -23,11 +23,10 @@
         <img src="assets/logo1.png" alt="DhanRekha Logo" />
         <span>DhanRekha</span>
     </div>
-
-     <div class="brand-tagline">
-       Where Your Money Tells a Story
+    <div class="nav-actions">
+      <button id="darkModeToggle" onclick="toggleDarkMode()">🌙</button>
+      <button onclick="logout()">Logout</button>
     </div>
-    <button onclick="logout()">Logout</button>
   </nav>
 
   <!-- Main Dashboard -->
@@ -42,7 +41,7 @@
     <!-- Quick Actions -->
     <section class="actions">
       <button onclick="openExpense()">➕ New Expense</button>
-      <button onclick="openIncome()">➕ Monthly Budgett</button>
+      <button onclick="openIncome()">➕ Monthly Budget</button>
     </section>
 
     <!-- Summary Cards -->
@@ -101,6 +100,14 @@
 </div>
 
 
+<section class="filters glass-card" style="margin-top: 20px; padding: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+  <label style="color: white; font-weight: 500;">Date Range:</label>
+  <input type="date" id="startDate" style="padding: 8px; border-radius: 6px; border: none;">
+  <input type="date" id="endDate" style="padding: 8px; border-radius: 6px; border: none;">
+  <button onclick="filterCharts()" style="padding: 8px 16px; border-radius: 6px; border: none; background: #22c55e; color: white; cursor: pointer;">Filter</button>
+  <button onclick="resetFilters()" style="padding: 8px 16px; border-radius: 6px; border: none; background: #64748b; color: white; cursor: pointer;">Reset</button>
+</section>
+
 <section class="charts">
 
   <!-- Category Pie -->
@@ -129,7 +136,7 @@
 <!-- Expense List -->
 <section class="expense-list glass-card">
   <div class="expense-header">
-    <h3>Recent Expenses (Last 7 Days)</h3>
+    <h3>Recent Expenses</h3>
     <button onclick="loadAllExpenses()">View All</button>
   </div>
 
