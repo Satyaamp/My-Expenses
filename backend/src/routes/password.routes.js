@@ -13,7 +13,9 @@ if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
 }
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true, // true for 465, false for other ports
   auth: {
     user: process.env.EMAIL_USER, // Ensure these are in your .env file
     pass: process.env.EMAIL_PASS,
@@ -96,8 +98,15 @@ router.post('/forgot-password', async (req, res) => {
     res.status(200).json({ message: 'Email sent successfully' });
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error' });
+    console.error("❌ Email Send Error:", err);
+
+    // If email fails, clear the token so the user can try again immediately
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save().catch(e => console.error("Failed to rollback user token", e));
+
+    // Send the actual error message to the frontend
+    res.status(500).json({ message: err.message || 'Error sending email' });
   }
 });
 
