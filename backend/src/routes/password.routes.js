@@ -43,12 +43,13 @@ router.post('/forgot-password', async (req, res) => {
     user.resetPasswordExpires = Date.now() + 300000; // 5 minutes
     await user.save();
 
-    // Construct the Link dynamically (Works for both Localhost and Render)
-    const protocol = req.headers['x-forwarded-proto'] || req.protocol;
-    const host = req.get('host');
-    const resetUrl = `${protocol}://${host}/reset-password.html?token=${token}`;
-    const logoUrl = `${protocol}://${host}/assets/logo1.png`;
-    const bannerUrl = `${protocol}://${host}/assets/banner.jpg`;
+    // Construct the Link dynamically
+    // Use 'origin' header to point back to Netlify if request came from there
+    const clientUrl = req.headers.origin || `${req.headers['x-forwarded-proto'] || req.protocol}://${req.get('host')}`;
+    
+    const resetUrl = `${clientUrl}/reset-password.html?token=${token}`;
+    const logoUrl = `${clientUrl}/assets/logo1.png`;
+    const bannerUrl = `${clientUrl}/assets/banner.png`;
 
     const mailOptions = {
       to: user.email,
@@ -160,7 +161,7 @@ router.get('/test-email', (req, res) => {
   const host = req.get('host');
   const resetUrl = `${protocol}://${host}/reset-password.html?token=test-token-123`;
   const logoUrl = `${protocol}://${host}/assets/logo1.png`;
-  const bannerUrl = `${protocol}://${host}/assets/banner.png`;
+  const bannerUrl = `${protocol}://${host}/assets/banner.jpg`;
 
   // Same HTML template as above
   const html = `
