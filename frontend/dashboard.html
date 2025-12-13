@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DhanRekha – Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#22c55e">
+
+  <link rel="stylesheet" href="css/glass.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body>
+
+  <!-- Auth Guard -->
+  <script src="js/authGuard.js"></script>
+
+
+
+  <!-- Navbar -->
+  <nav class="navbar glass-card">
+    <div class="logo">
+        <img src="assets/logo1.png" alt="DhanRekha Logo" />
+        <span>DhanRekha</span>
+    </div>
+
+     <div class="brand-tagline">
+       Where Your Money Tells a Story
+    </div>
+    <button onclick="logout()">Logout</button>
+  </nav>
+
+  <!-- Main Dashboard -->
+  <main class="container">
+
+    <!-- Balance Card -->
+    <section class="balance-card glass-card">
+      <h3>Remaining Balance</h3>
+      <p id="balance">₹0</p>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="actions">
+      <button onclick="openExpense()">➕ New Expense</button>
+      <button onclick="openIncome()">➕ Monthly Budgett</button>
+    </section>
+
+    <!-- Summary Cards -->
+    <section class="summary">
+      <div class="summary-card glass-card">
+        <h4>Total Income</h4>
+        <p id="totalIncome">₹0</p>
+      </div>
+      <div class="summary-card glass-card">
+        <h4>Total Expense</h4>
+        <p id="totalExpense">₹0</p>
+      </div>
+    </section>
+
+    <!-- Add Expense Modal -->
+<div id="expenseModal" class="modal hidden">
+  <div class="modal-content glass-card">
+    <h3>Add Expense</h3>
+
+    <input type="number" id="expenseAmount" placeholder="Amount (₹)" />
+    
+    <select id="expenseCategory">
+      <option value="">Select Category</option>
+      <option value="Food">Food</option>
+      <option value="Travel">Travel</option>
+      <option value="Rent">Rent</option>
+      <option value="Shopping">Shopping</option>
+      <option value="Other">Other</option>
+    </select>
+
+    <input type="date" id="expenseDate" />
+
+    <input type="text" id="expenseDesc" placeholder="Description (optional)" />
+
+    <div class="modal-actions">
+      <button onclick="addExpense()">Save</button>
+      <button class="cancel" onclick="closeExpense()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Income Modal -->
+<div id="incomeModal" class="modal hidden">
+  <div class="modal-content glass-card">
+    <h3>Add Income</h3>
+
+    <input type="number" id="incomeAmount" placeholder="Amount (₹)" />
+    <input type="text" id="incomeSource" placeholder="Source (Salary, Freelance)" />
+    <input type="date" id="incomeDate" />
+
+    <div class="modal-actions">
+      <button onclick="addIncome()">Save</button>
+      <button class="cancel" onclick="closeIncome()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+<section class="charts">
+
+  <!-- Category Pie -->
+  <div class="chart-card glass-card">
+    <h3>Spending by Category</h3>
+    <canvas id="categoryChart"></canvas>
+  </div>
+
+  <!-- Weekly Trend -->
+  <div class="chart-card glass-card">
+    <h3>Last 7 Days Trend</h3>
+    <canvas id="weeklyChart"></canvas>
+  </div>
+
+  <!-- Monthly Histogram -->
+  <div class="chart-card glass-card">
+    <h3>Monthly Expenses</h3>
+    <canvas id="monthlyChart"></canvas>
+  </div>
+
+</section>
+
+
+
+
+<!-- Expense List -->
+<section class="expense-list glass-card">
+  <div class="expense-header">
+    <h3>Recent Expenses (Last 7 Days)</h3>
+    <button onclick="loadAllExpenses()">View All</button>
+  </div>
+
+
+
+  <ul id="expenseList">
+    <li>Loading expenses...</li>
+  </ul>
+</section>
+
+
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+  <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>

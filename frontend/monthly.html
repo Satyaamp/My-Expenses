@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DhanRekha – Monthly Summary</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#22c55e">
+  <link rel="stylesheet" href="css/monthly.css" />
+</head>
+<body>
+
+<header class="glass-header">
+  <div class="header-left">
+    <h2>Monthly Overview</h2>
+  </div>
+
+  <div class="header-center">
+    <input type="month" id="monthPicker" />
+  </div>
+
+  <div class="header-center">
+    <a href="dashboard.html" class="btn-shine">Back to Dashboard</a>
+  </div>
+
+  <div class="header-right">
+    <img src="assets/logo1.png" alt="DhanRekha Logo" class="logo">
+  </div>
+</header>
+
+
+<!-- Summary Cards -->
+<section class="summary">
+  <div class="card">
+    <h4>Total Income</h4>
+    <p id="monthlyIncome">₹0</p>
+  </div>
+
+  <div class="card">
+    <h4>Total Expense</h4>
+    <p id="monthlyExpense">₹0</p>
+  </div>
+
+  <div class="card">
+    <h4>Remaining Balance</h4>
+    <p id="monthlyBalance">₹0</p>
+  </div>
+</section>
+
+<!-- Category-wise Expenses -->
+<section class="expense-list">
+  <h3>Expenses by Category</h3>
+  <ul id="monthlyExpenseList"></ul>
+</section>
+
+<!-- Date-wise Transactions -->
+<section class="date-wise">
+  <h3>Transactions by Date</h3>
+  <div id="dateWiseList"></div>
+</section>
+
+
+<script type="module" src="js/monthly.js"></script>
+</body>
+</html>

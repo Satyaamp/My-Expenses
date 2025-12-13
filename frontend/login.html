@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DhanRekha – Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/glass.css" />
+  <link rel="stylesheet" href="css/auth.css" />
+</head>
+<body>
+  <div class="auth-container">
+    <form id="loginForm" class="glass-card">
+      <h1>DhanRekha</h1>
+      <p class="tagline">Where Your Money Tells a Story</p>
+
+      <div class="error-message" id="errorMessage"></div>
+
+      <div class="input-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="Enter your email" required />
+      </div>
+
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter your password" required />
+      </div>
+
+      <button type="submit">Login</button>
+
+      <p class="link">
+        Don't have an account?
+        <a href="signup.html">Sign up</a>
+      </p>
+    </form>
+  </div>
+
+  <script type="module" src="js/auth.js"></script>
+</body>
+</html>
