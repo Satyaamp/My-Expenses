@@ -14,19 +14,16 @@ if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
-  port: 587, // Use 587 for STARTTLS (more reliable on cloud)
-  secure: false, 
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER ? process.env.EMAIL_USER.trim() : "",
     pass: process.env.EMAIL_PASS ? process.env.EMAIL_PASS.trim() : "",
   },
-  tls: {
-    rejectUnauthorized: false // Helps prevent handshake errors on some networks
-  },
   // Add timeouts to prevent infinite spinning
-  connectionTimeout: 10000, // 10 seconds
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
+  connectionTimeout: 20000,
+  greetingTimeout: 20000,
+  socketTimeout: 20000,
   logger: true, // Enable logging to see detailed errors on Render
   debug: true,  // Enable debug output
   family: 4     // Force IPv4 (Fixes timeouts on some cloud providers)
