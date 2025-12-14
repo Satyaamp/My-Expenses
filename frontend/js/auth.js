@@ -17,17 +17,6 @@ form.addEventListener("submit", async (e) => {
     // Save JWT
     localStorage.setItem("token", res.data);
 
-    // 🔐 Ask to enable biometric
-    if (window.PublicKeyCredential) {
-      const enableBio = confirm(
-        "Enable fingerprint / face unlock for faster login next time?"
-      );
-
-      if (enableBio) {
-        localStorage.setItem("biometricEnabled", "true");
-      }
-    }
-
     // Redirect to dashboard
     window.location.href = "dashboard.html";
   } catch (err) {
