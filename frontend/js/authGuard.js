@@ -1,17 +1,15 @@
 const token = localStorage.getItem("token");
-const biometricEnabled = localStorage.getItem("biometricEnabled");
 
 // ❌ Not logged in
 if (!token) {
   window.location.href = "index.html";
 }
 
-// 🔐 Biometric enabled
-if (token && biometricEnabled === "true") {
-  if (!sessionStorage.getItem("biometricUnlocked")) {
-    authenticateWithBiometric();
-  }
+// 🔐 App Lock
+if (!sessionStorage.getItem("unlocked")) {
+  window.location.href = "lock.html";
 }
+
 
 async function authenticateWithBiometric() {
   try {

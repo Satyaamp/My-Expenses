@@ -66,10 +66,13 @@ async function loadDashboard() {
    AUTH / LOGOUT
 ================================ */
 
-window.logout = function () {
+
+windows.logout() = function() {
   localStorage.removeItem("token");
+  sessionStorage.clear();
   window.location.href = "index.html";
-};
+}
+
 
 /* ===============================
    EXPENSE MODAL

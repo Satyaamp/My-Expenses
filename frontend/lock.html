@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Unlock DhanRekha</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="display:flex;justify-content:center;align-items:center;height:100vh;flex-direction:column">
+
+<h2>🔒 App Locked</h2>
+<button onclick="unlock()">Unlock</button>
+
+<script>
+async function unlock() {
+  try {
+    if (!window.PublicKeyCredential) {
+      alert("Device lock not supported");
+      return;
+    }
+
+    await navigator.credentials.get({
+      publicKey: {
+        challenge: new Uint8Array(32),
+        userVerification: "required",
+        timeout: 60000
+      }
+    });
+
+    sessionStorage.setItem("unlocked", "yes");
+    window.location.href = "dashboard.html";
+
+  } catch {
+    alert("Authentication required");
+  }
+}
+</script>
+
+</body>
+</html>
