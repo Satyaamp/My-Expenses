@@ -1,7 +1,7 @@
 body {
   margin: 0;
   font-family: "Segoe UI", sans-serif;
-  background: linear-gradient(135deg, #0f172a, #1e293b, #334155);
+  background: linear-gradient(135deg, #313132, #2d2f32, #30343b);
   color: white;
   height: 100vh;
 }
@@ -15,3 +15,6 @@ body {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   color: #ffffff;
 }
+
+
+

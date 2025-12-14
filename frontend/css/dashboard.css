@@ -83,7 +83,7 @@
 
 
 .container {
-  padding: 20px;
+  padding: 10px;
 }
 
 .balance-card {
@@ -126,17 +126,19 @@
   color: white;
 }
 
+body.modal-open {
+  overflow: hidden;
+}
+
 
 .modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1000;
 }
 
 .modal.hidden {
@@ -144,38 +146,46 @@
 }
 
 .modal-content {
-  width: 320px;
-  padding: 20px;
-  color: white;
+  padding: 24px;           
+  box-sizing: border-box;
 }
+
 
 .modal-content input,
 .modal-content select {
   width: 100%;
-  padding: 10px;
-  margin: 8px 0;
-  border-radius: 6px;
-  border: none;
+  box-sizing: border-box; 
+  padding: 12px 14px;      
+  margin: 10px 0;      
+  border-radius: 10px;
 }
+
 
 .modal-actions {
   display: flex;
-  gap: 10px;
-  margin-top: 15px;
+  gap: 12px;
+  margin-top: 16px;
 }
 
 .modal-actions button {
   flex: 1;
-  padding: 10px;
+  padding: 12px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
 }
+
 
 .modal-actions .cancel {
   background: #ef476f;
   color: white;
 }
+
+.form-group {
+  width: 100%;
+}
+
+
 
 .expense-list {
   margin-top: 30px;

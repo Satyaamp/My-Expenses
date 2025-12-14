@@ -1,48 +1,35 @@
 import { apiRequest } from "./api.js";
 
+
 /* ===============================
-   DARK MODE TOGGLE
+   GLOBAL ELEMENTS
 ================================ */
-const darkModeToggle = document.getElementById("darkModeToggle");
-const isLightMode = localStorage.getItem("theme") === "light";
-
-if (isLightMode) {
-  document.body.classList.add("light-mode");
-  if (darkModeToggle) darkModeToggle.innerText = "🌙";
-} else {
-  if (darkModeToggle) darkModeToggle.innerText = "☀️";
-}
-
-window.toggleDarkMode = function () {
-  document.body.classList.toggle("light-mode");
-  const isLight = document.body.classList.contains("light-mode");
-  localStorage.setItem("theme", isLight ? "light" : "dark");
-  const toggleBtn = document.getElementById("darkModeToggle");
-  if (toggleBtn) toggleBtn.innerText = isLight ? "🌙" : "☀️";
-};
-
 const picker = document.getElementById("monthPicker");
-let selectedDate = null;
+const mobileDayInput = document.getElementById("mobile-day-input");
+const mobileListContainer = document.getElementById("mobile-transaction-list");
+const mobileMonthText = document.getElementById("mobileMonthText");
+const mobileMonthSwipe = document.getElementById("mobileMonthSwipe");
+
 let currentMonthExpenses = [];
 
-// Inject styles for disabled dates
-const style = document.createElement('style');
-style.textContent = `
-  .calendar-day.disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-    pointer-events: none;
-  }
-`;
-document.head.appendChild(style);
-
-picker.addEventListener("change", loadMonthlyData);
-
-// default = current month
+/* ===============================
+   INIT
+================================ */
 const now = new Date();
-picker.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+picker.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+
+updateMobileMonthText();
 loadMonthlyData();
 
+/* Desktop Picker Change */
+picker.addEventListener("change", () => {
+  updateMobileMonthText();
+  loadMonthlyData();
+});
+
+/* ===============================
+   LOAD MONTHLY DATA
+================================ */
 async function loadMonthlyData() {
   const [year, month] = picker.value.split("-");
 
@@ -50,292 +37,335 @@ async function loadMonthlyData() {
     `/expenses/summary/monthly?month=${month}&year=${year}`
   );
 
-  document.getElementById("monthlyIncome").innerText =
-    `₹${res.data.totalIncome}`;
+  document.getElementById("monthlyIncome").innerText = `₹${res.data.totalIncome}`;
+  document.getElementById("monthlyExpense").innerText = `₹${res.data.totalExpense}`;
+  document.getElementById("monthlyBalance").innerText = `₹${res.data.balance}`;
 
-  document.getElementById("monthlyExpense").innerText =
-    `₹${res.data.totalExpense}`;
-
-  document.getElementById("monthlyBalance").innerText =
-    `₹${res.data.balance}`;
-
-  renderExpenses(res.data.categories);
-
+  renderExpenseHistogram(res.data.categories);
   await loadDateWiseExpenses(month, year);
 }
 
-function renderExpenses(categories) {
-  const list = document.getElementById("monthlyExpenseList");
-  list.innerHTML = "";
+/* ===============================
+   CATEGORY HISTOGRAM
+================================ */
+function renderExpenseHistogram(categories) {
+  const container = document.getElementById("expenseHistogram");
+  container.innerHTML = "";
 
-  categories.forEach(item => {
-    const li = document.createElement("li");
-    li.innerHTML = `
-      <span><strong>${item.category}</strong><br>
-      ₹${item.total} (${item.count} transactions)</span>
-    `;
-    list.appendChild(li);
-  });
-}
-
-async function loadDateWiseExpenses(month, year) {
-  const res = await apiRequest(
-    `/expenses/month?month=${month}&year=${year}`
-  );
-
-  currentMonthExpenses = res.data;
-  renderCalendar(parseInt(year), parseInt(month) - 1);
-}
-
-// Utility functions
-function getDaysInMonth(year, month) {
-  return new Date(year, month + 1, 0).getDate();
-}
-
-function getFirstDayOfMonth(year, month) {
-  return new Date(year, month, 1).getDay();
-}
-
-function getTransactionsForDate(dateStr) {
-  return currentMonthExpenses.filter(exp => {
-    const expDate = new Date(exp.date).toISOString().split('T')[0];
-    return expDate === dateStr;
-  });
-}
-
-function formatCurrency(amount) {
-  return '₹' + amount.toLocaleString('en-IN');
-}
-
-// Render calendar
-function renderCalendar(year, month) {
-  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-  const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  
-  const daysInMonth = getDaysInMonth(year, month);
-  const firstDay = getFirstDayOfMonth(year, month);
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  
-  const isMobile = window.innerWidth <= 768;
-  
-  let calendarHTML = '';
-  
-  if (isMobile) {
-    // Mobile: Tab-based layout
-    calendarHTML = `
-      <div class="mobile-tabs">
-        <div class="mobile-tab active" data-tab="calendar">📅 Calendar</div>
-        <div class="mobile-tab" data-tab="transactions">📋 Details</div>
-      </div>
-      
-      <div class="mobile-tab-content active" data-content="calendar">
-        <div class="calendar-view">
-          <div class="calendar-header">${monthNames[month]} ${year}</div>
-          <div class="calendar-grid">
-            ${dayLabels.map(day => `<div class="calendar-day-label">${day}</div>`).join('')}
-    `;
-    
-    // Add empty cells
-    for (let i = 0; i < firstDay; i++) {
-      calendarHTML += '<div class="calendar-day empty"></div>';
-    }
-    
-    // Add day cells
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      const transactions = getTransactionsForDate(dateStr);
-      const hasTransactions = transactions.length > 0 ? 'has-transactions' : '';
-      
-      const cellDate = new Date(year, month, day);
-      const disabledClass = cellDate > today ? 'disabled' : '';
-      
-      calendarHTML += `<div class="calendar-day ${hasTransactions} ${disabledClass}" data-date="${dateStr}">${day}</div>`;
-    }
-    
-    calendarHTML += `
-          </div>
-        </div>
-      </div>
-      
-      <div class="mobile-tab-content" data-content="transactions">
-        <div class="transactions-panel">
-          <div class="transactions-header">
-            <h4 id="selectedDateTitle">Select a date</h4>
-            <p id="selectedDateSubtitle">Tap on a date in calendar to view transactions</p>
-          </div>
-          <div class="transactions-list" id="transactionsList">
-            <div class="empty-state">
-              <p>📅</p>
-              <p>Select a date from calendar</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  } else {
-    // Desktop: Side-by-side layout
-    calendarHTML = `
-      <div class="calendar-view">
-        <div class="calendar-header">${monthNames[month]} ${year}</div>
-        <div class="calendar-grid">
-          ${dayLabels.map(day => `<div class="calendar-day-label">${day}</div>`).join('')}
-    `;
-    
-    // Add empty cells
-    for (let i = 0; i < firstDay; i++) {
-      calendarHTML += '<div class="calendar-day empty"></div>';
-    }
-    
-    // Add day cells
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      const transactions = getTransactionsForDate(dateStr);
-      const hasTransactions = transactions.length > 0 ? 'has-transactions' : '';
-
-      const cellDate = new Date(year, month, day);
-      const disabledClass = cellDate > today ? 'disabled' : '';
-      
-      calendarHTML += `<div class="calendar-day ${hasTransactions} ${disabledClass}" data-date="${dateStr}">${day}</div>`;
-    }
-    
-    calendarHTML += `
-        </div>
-      </div>
-      <div class="transactions-panel">
-        <div class="transactions-header">
-          <h4 id="selectedDateTitle">Select a date</h4>
-          <p id="selectedDateSubtitle">Click on a date to view transactions</p>
-        </div>
-        <div class="transactions-list" id="transactionsList">
-          <div class="empty-state">
-            <p>📅</p>
-            <p>Select a date to view transactions</p>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-  
-  document.getElementById("dateWiseList").innerHTML = calendarHTML;
-  
-  // Add click handlers to calendar days
-  document.querySelectorAll('.calendar-day:not(.empty)').forEach(dayCell => {
-    dayCell.addEventListener('click', () => {
-      if (dayCell.classList.contains('disabled')) return;
-      const dateStr = dayCell.getAttribute('data-date');
-      selectDate(dateStr, dayCell);
-    });
-  });
-  
-  // Add mobile tab switching
-  if (isMobile) {
-    document.querySelectorAll('.mobile-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        const tabName = tab.getAttribute('data-tab');
-        
-        // Switch active tab
-        document.querySelectorAll('.mobile-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        
-        // Switch active content
-        document.querySelectorAll('.mobile-tab-content').forEach(c => c.classList.remove('active'));
-        document.querySelector(`.mobile-tab-content[data-content="${tabName}"]`).classList.add('active');
-      });
-    });
-  }
-}
-
-// Select date and show transactions
-function selectDate(dateStr, dayCell) {
-  // Remove previous selection
-  document.querySelectorAll('.calendar-day.selected').forEach(d => d.classList.remove('selected'));
-  dayCell.classList.add('selected');
-  
-  selectedDate = dateStr;
-  const transactions = getTransactionsForDate(dateStr);
-  const date = new Date(dateStr + 'T00:00:00');
-  
-  document.getElementById('selectedDateTitle').textContent = date.toLocaleDateString('en-IN', { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  });
-  
-  const totalAmount = transactions.reduce((sum, t) => sum + t.amount, 0);
-  
-  document.getElementById('selectedDateSubtitle').textContent = 
-    `${transactions.length} transaction${transactions.length !== 1 ? 's' : ''} • Total: ${formatCurrency(totalAmount)}`;
-  
-  const list = document.getElementById('transactionsList');
-  
-  if (transactions.length === 0) {
-    list.innerHTML = '<div class="empty-state"><p>📭</p><p>No transactions on this date</p></div>';
-  } else {
-    list.innerHTML = transactions.map(t => `
-      <div class="transaction-item">
-        <div class="transaction-top">
-          <span class="transaction-amount expense">-${formatCurrency(t.amount)}</span>
-          <span class="transaction-category">${t.category}</span>
-        </div>
-        <div class="transaction-description">${t.description || 'No description'}</div>
-      </div>
-    `).join('');
-  }
-  
-  // On mobile, automatically switch to transactions tab
-  if (window.innerWidth <= 768) {
-    document.querySelectorAll('.mobile-tab').forEach(t => t.classList.remove('active'));
-    document.querySelector('.mobile-tab[data-tab="transactions"]').classList.add('active');
-    
-    document.querySelectorAll('.mobile-tab-content').forEach(c => c.classList.remove('active'));
-    document.querySelector('.mobile-tab-content[data-content="transactions"]').classList.add('active');
+  if (!categories || categories.length === 0) {
+    container.innerHTML = "<p>No data available</p>";
+    return;
   }
 
-}
+  const totalExpense = categories.reduce((sum, c) => sum + c.total, 0);
 
-  const header = document.querySelector('.glass-header');
+  categories.forEach((cat, index) => {
+    const percent = ((cat.total / totalExpense) * 100).toFixed(1);
 
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 10) {
-      header.classList.add('scrolled');
-    } else {
-      header.classList.remove('scrolled');
-    }
+    const item = document.createElement("div");
+    item.className = "histogram-item";
+
+    item.innerHTML = `
+      <div class="histogram-header">
+        <span class="category-name">${cat.category}</span>
+        <span class="category-value">
+          ₹${cat.total}
+          <span class="category-percent">${percent}%</span>
+        </span>
+      </div>
+
+      <div class="histogram-bar-wrapper">
+        <div 
+          class="histogram-bar" 
+          style="--bar-width:${percent}%"
+        ></div>
+      </div>
+
+      <div class="histogram-count">
+        ${cat.count} transaction${cat.count !== 1 ? "s" : ""}
+      </div>
+    `;
+
+    container.appendChild(item);
   });
+}
 
 /* ===============================
-   SWIPE GESTURE SUPPORT
+   DATE-WISE DATA
 ================================ */
-const calendarContainer = document.getElementById("dateWiseList");
+async function loadDateWiseExpenses(month, year) {
+  const res = await apiRequest(`/expenses/month?month=${month}&year=${year}`);
+  currentMonthExpenses = res.data;
+
+  renderCalendar(+year, +month - 1);
+  setupMobileDaySearch();
+}
+
+/* ===============================
+   MOBILE DAY SEARCH (ONLY ONE INPUT)
+================================ */
+function setupMobileDaySearch() {
+  if (!mobileDayInput || !mobileListContainer) return;
+
+  mobileDayInput.value = "";
+  mobileListContainer.innerHTML =
+    `<p class="text-muted">Enter a day (1–31) to see transactions</p>`;
+
+  mobileDayInput.oninput = () => {
+    const day = mobileDayInput.value.trim();
+
+    if (!day || day < 1 || day > 31) {
+      mobileListContainer.innerHTML =
+        `<p class="text-muted">Enter a valid day (1–31)</p>`;
+      return;
+    }
+
+    const [year, month] = picker.value.split("-");
+    const dateStr = `${year}-${month}-${String(day).padStart(2, "0")}`;
+
+    renderMobileTransactions(dateStr);
+  };
+}
+
+function renderMobileTransactions(dateStr) {
+  const tx = getTransactionsForDate(dateStr);
+
+  if (!tx.length) {
+    mobileListContainer.innerHTML =
+      `<p class="text-muted">No transactions found for this date.</p>`;
+    return;
+  }
+
+  mobileListContainer.innerHTML = tx.map(t => `
+    <div class="transaction-item">
+      <div class="transaction-top">
+        <span class="transaction-amount expense">-₹${t.amount}</span>
+        <span class="transaction-category">${t.category}</span>
+      </div>
+      <div class="transaction-description">
+        ${t.description || "No description"}
+      </div>
+    </div>
+  `).join("");
+}
+
+/* ===============================
+   UTILITIES
+================================ */
+function getTransactionsForDate(dateStr) {
+  return currentMonthExpenses.filter(e =>
+    new Date(e.date).toISOString().split("T")[0] === dateStr
+  );
+}
+
+/* ===============================
+   DESKTOP CALENDAR
+================================ */
+function renderCalendar(year, month) {
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDay = new Date(year, month, 1).getDay();
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+
+  let html = `
+    <div class="calendar-view">
+      <div class="calendar-header">
+        ${new Date(year, month).toLocaleString("default", { month: "long" })} ${year}
+      </div>
+      <div class="calendar-grid">
+        ${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+          .map(d => `<div class="calendar-day-label">${d}</div>`).join("")}
+  `;
+
+  for (let i = 0; i < firstDay; i++) {
+    html += `<div class="calendar-day empty"></div>`;
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const txCount = getTransactionsForDate(dateStr).length;
+    const hasTx = txCount > 0;
+    const disabled = new Date(year,month,d) > today ? "disabled" : "";
+
+    html += `
+      <div class="calendar-day 
+        ${hasTx ? "day-has-tx" : "day-no-tx"} 
+        ${disabled}"
+        data-date="${dateStr}">
+        ${d}
+      </div>`;
+  }
+
+  html += `
+      </div>
+    </div>
+
+    <div class="transactions-panel">
+      <div class="transactions-header">
+        <h4 id="selectedDateTitle">Select a date</h4>
+      </div>
+      <div class="transactions-list" id="transactionsList">
+        <div class="empty-state">
+          <p>📅</p>
+          <p>Select a date</p>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("dateWiseList").innerHTML = html;
+
+  document.querySelectorAll(".calendar-day:not(.empty)").forEach(cell => {
+    cell.addEventListener("click", () => {
+      if (cell.classList.contains("disabled")) return;
+      selectDate(cell.dataset.date, cell);
+    });
+  });
+}
+
+/* ===============================
+   DESKTOP DATE SELECT
+================================ */
+function selectDate(dateStr, cell) {
+  document.querySelectorAll(".calendar-day.selected")
+    .forEach(d => d.classList.remove("selected"));
+
+  cell.classList.add("selected");
+
+  const list = document.getElementById("transactionsList");
+  const tx = getTransactionsForDate(dateStr);
+
+  document.getElementById("selectedDateTitle").innerText =
+    new Date(dateStr).toDateString();
+
+  if (!tx.length) {
+    list.innerHTML =
+      `<div class="empty-state"><p>📭</p><p>No transactions</p></div>`;
+    return;
+  }
+
+  list.innerHTML = tx.map(t => `
+    <div class="transaction-item">
+      <div class="transaction-top">
+        <span class="transaction-amount expense">-₹${t.amount}</span>
+        <span class="transaction-category">${t.category}</span>
+      </div>
+      <div class="transaction-description">
+        ${t.description || "No description"}
+      </div>
+    </div>
+  `).join("");
+}
+
+/* ===============================
+   MOBILE MONTH SWIPE
+================================ */
+/* Update visible month text */
+function updateMobileMonthText() {
+  if (!mobileMonthText) return;
+
+  const [year, month] = picker.value.split("-");
+  const date = new Date(year, month - 1);
+
+  mobileMonthText.innerText =
+    date.toLocaleString("default", {
+      month: "long",
+      year: "numeric"
+    });
+}
+
 let touchStartX = 0;
 let touchEndX = 0;
 
-if (calendarContainer) {
-  calendarContainer.addEventListener('touchstart', e => {
-    // Only allow swipe on the calendar part
-    if (!e.target.closest('.calendar-view')) return;
+if (mobileMonthSwipe) {
+  mobileMonthSwipe.addEventListener("touchstart", e => {
     touchStartX = e.changedTouches[0].screenX;
-  }, { passive: true });
+  });
 
-  calendarContainer.addEventListener('touchend', e => {
-    if (!e.target.closest('.calendar-view')) return;
+  mobileMonthSwipe.addEventListener("touchend", e => {
     touchEndX = e.changedTouches[0].screenX;
-    handleSwipe();
-  }, { passive: true });
+    handleMonthSwipe();
+  });
 }
 
-function handleSwipe() {
-  const threshold = 50; // Minimum distance to trigger swipe
-  if (touchEndX < touchStartX - threshold) changeMonth(1); // Swipe Left -> Next Month
-  if (touchEndX > touchStartX + threshold) changeMonth(-1); // Swipe Right -> Prev Month
+function handleMonthSwipe() {
+  const diff = touchEndX - touchStartX;
+
+  // Minimum swipe distance
+  if (Math.abs(diff) < 50) return;
+
+  if (diff < 0) {
+    changeMonth(1);   // swipe left → next month
+  } else {
+    changeMonth(-1);  // swipe right → previous month
+  }
 }
 
-function changeMonth(offset) {
+function changeMonth(delta) {
   const [year, month] = picker.value.split("-").map(Number);
-  const date = new Date(year, month - 1 + offset, 1);
-  picker.value = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+  
+  // Create Date object for target month (using date 1 to avoid overflow)
+  const newDate = new Date(year, month - 1 + delta, 1);
+  
+  // Get current date to compare against (also set to day 1 for strict month comparison)
+  const today = new Date();
+  const currentMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+
+  // BLOCKING LOGIC: If the user tries to go past the current month
+  if (newDate > currentMonthStart) {
+    showToast("Future data not available");
+    return; // Block execution
+  }
+
+  const newMonth = String(newDate.getMonth() + 1).padStart(2, "0");
+  const newYear = newDate.getFullYear();
+
+  picker.value = `${newYear}-${newMonth}`;
+
+  updateMobileMonthText();
   loadMonthlyData();
+}
+
+/* ===============================
+   TOAST NOTIFICATION HELPER
+================================ */
+function showToast(message) {
+  // 1. Create toast element if it doesn't exist
+  let toast = document.getElementById("toast-notification");
+  
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "toast-notification";
+    
+    // Apply styling via JS so no CSS file edit is needed
+    Object.assign(toast.style, {
+      position: "fixed",
+      bottom: "80px", // Just above bottom nav usually
+      left: "50%",
+      transform: "translateX(-50%)",
+      backgroundColor: "rgba(33, 37, 41, 0.9)", // Dark grey/black
+      color: "#fff",
+      padding: "10px 20px",
+      borderRadius: "20px",
+      fontSize: "0.9rem",
+      zIndex: "9999",
+      opacity: "0",
+      transition: "opacity 0.3s ease",
+      boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+      pointerEvents: "none"
+    });
+    
+    document.body.appendChild(toast);
+  }
+
+  // 2. Set text and show
+  toast.innerText = message;
+  toast.style.opacity = "1";
+
+  // 3. Clear existing timeout if multiple swipes happen quickly
+  if (toast.hideTimeout) clearTimeout(toast.hideTimeout);
+
+  // 4. Hide after 2 seconds
+  toast.hideTimeout = setTimeout(() => {
+    toast.style.opacity = "0";
+  }, 2000);
 }

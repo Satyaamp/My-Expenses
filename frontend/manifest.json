@@ -1,7 +1,7 @@
 {
   "name": "DhanRekha – Personal Expense Tracker",
   "short_name": "DhanRekha",
-  "description": "Track income, expenses and financial insights securely.",
+  "description": "Where Your Money Tells a Story.",
   "id": "/index.html",
   "start_url": "/index.html",
   "display": "standalone",

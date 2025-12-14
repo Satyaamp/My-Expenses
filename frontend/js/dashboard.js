@@ -18,54 +18,8 @@ let categoryChart = null;
 let weeklyChart = null;
 let monthlyChart = null;
 
-/* ===============================
-   DARK MODE TOGGLE
-================================ */
-const darkModeToggle = document.getElementById("darkModeToggle");
-const isLightMode = localStorage.getItem("theme") === "light";
 
-if (isLightMode) {
-  document.body.classList.add("light-mode");
-  if (darkModeToggle) darkModeToggle.innerText = "🌙";
-} else {
-  if (darkModeToggle) darkModeToggle.innerText = "☀️";
-}
 
-window.toggleDarkMode = function () {
-  document.body.classList.toggle("light-mode");
-  const isLight = document.body.classList.contains("light-mode");
-  localStorage.setItem("theme", isLight ? "light" : "dark");
-  document.getElementById("darkModeToggle").innerText = isLight ? "🌙" : "☀️";
-  updateChartsTheme(!isLight);
-};
-
-function updateChartsTheme(isDark) {
-  const theme = {
-    text: isDark ? "#e2e8f0" : "#ffffff",
-    grid: isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(255, 255, 255, 0.2)",
-    primary: isDark ? "#A78BFA" : chartColors.primary // Example: Lighter violet in dark mode
-  };
-
-  if (categoryChart) {
-    categoryChart.options.plugins.legend.labels.color = theme.text;
-    categoryChart.update();
-  }
-
-  if (weeklyChart) {
-    weeklyChart.options.scales.x.ticks.color = theme.text;
-    weeklyChart.options.scales.y.ticks.color = theme.text;
-    weeklyChart.options.scales.y.grid.color = theme.grid;
-    weeklyChart.data.datasets[0].borderColor = theme.primary;
-    weeklyChart.update();
-  }
-
-  if (monthlyChart) {
-    monthlyChart.options.scales.x.ticks.color = theme.text;
-    monthlyChart.options.scales.y.ticks.color = theme.text;
-    monthlyChart.options.scales.y.grid.color = theme.grid;
-    monthlyChart.update();
-  }
-}
 
 /* ===============================
    LOADING HELPER
@@ -121,13 +75,21 @@ window.logout = function () {
    EXPENSE MODAL
 ================================ */
 
+
 window.openExpense = function () {
-  document.getElementById("expenseModal").classList.remove("hidden");
+  const modal = document.getElementById("expenseModal");
+
+  modal.classList.remove("hidden");
+  document.body.classList.add("modal-open"); 
 };
 
 window.closeExpense = function () {
-  document.getElementById("expenseModal").classList.add("hidden");
+  const modal = document.getElementById("expenseModal");
+
+  modal.classList.add("hidden");
+  document.body.classList.remove("modal-open");
 };
+
 
 window.addExpense = async function () {
   const amount = document.getElementById("expenseAmount").value;
@@ -150,7 +112,7 @@ window.addExpense = async function () {
 
     closeExpense();
     loadDashboard();
-    loadRecentExpenses(); // ✅ refresh recent list
+    loadRecentExpenses(); 
     alert("Expense added successfully");
 
   } catch (err) {
@@ -163,12 +125,17 @@ window.addExpense = async function () {
 ================================ */
 
 window.openIncome = function () {
-  document.getElementById("incomeModal").classList.remove("hidden");
+  const modal = document.getElementById("incomeModal");
+  modal.classList.remove("hidden");
+  document.body.classList.add("modal-open");
 };
 
 window.closeIncome = function () {
-  document.getElementById("incomeModal").classList.add("hidden");
+  const modal = document.getElementById("incomeModal");
+  modal.classList.add("hidden");
+  document.body.classList.remove("modal-open");
 };
+
 
 window.addIncome = async function () {
   const amount = document.getElementById("incomeAmount").value;

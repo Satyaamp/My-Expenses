@@ -4,65 +4,157 @@
   <meta charset="UTF-8" />
   <title>DhanRekha – Monthly Summary</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#22c55e">
+
+  <link rel="shortcut icon" href="assets/icons/month.png" type="image/png">
   <link rel="stylesheet" href="css/glass.css" />
   <link rel="stylesheet" href="css/dashboard.css" />
   <link rel="stylesheet" href="css/monthly.css" />
+
+  <style>
+    /* =========================================
+       NAVBAR RESPONSIVENESS & GLASS ICONS
+    ========================================= */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+    }
+
+    
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* --- DESKTOP VIEW (Default) --- */
+    .nav-btn {
+      padding: 8px 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      background: rgba(93, 153, 184, 0.964); /* Subtle bg */
+      color: inherit;
+      font-size: 0.9rem;
+      transition: background 0.3s;
+    }
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    
+    .mobile-icon { display: none; } /* Hide icons on desktop */
+
+    /* --- MOBILE VIEW (Max Width 768px) --- */
+    @media (max-width: 768px) {
+      /* Hide elements not needed on mobile */
+      .desktop-only, .desktop-text {
+        display: none;
+      }
+
+      .mobile-icon {
+        display: inline-block;
+      }
+
+      /* GLASSY ICON STYLE 
+         Turns buttons into frosted glass tiles 
+      */
+      .nav-btn {
+        width: 42px;
+        height: 42px;
+        padding: 0; 
+        
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        /* Glass Effect */
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 12px; /* Soft rounded corners like iOS */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        
+        font-size: 1.2rem;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .nav-btn:active {
+        transform: scale(0.92); /* Click press effect */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Auth Guard -->
-  <script src="js/authGuard.js"></script>
+<nav class="navbar glass-card">
+  <div class="logo">
+    <img src="assets/logo1.png" alt="DhanRekha Logo" />
+    <span>DhanRekha</span>
+  </div>
 
-  <!-- Navbar -->
-  <nav class="navbar glass-card">
-    <div class="logo">
-        <img src="assets/logo1.png" alt="DhanRekha Logo" />
-        <span>DhanRekha</span>
+  <div class="nav-actions">
+    <input type="month" id="monthPicker" class="desktop-only">
+    
+    
+    <button onclick="location.href='dashboard.html'" class="nav-btn" title="Dashboard">
+      <span class="desktop-text">Dashboard</span>
+      <span class="mobile-icon">🏠</span>
+    </button>
+  </div>
+</nav>
+
+<main class="container">
+
+  <section class="summary">
+    <div class="summary-card glass-card">
+      <h4>Budget Limit</h4>
+      <p id="monthlyIncome">₹0</p>
     </div>
-    <div class="nav-actions">
-      <input type="month" id="monthPicker" style="padding: 8px; border-radius: 8px; border: none; outline: none; background: rgba(255,255,255,0.9); color: #333; font-weight: bold;">
-      <button id="darkModeToggle" onclick="toggleDarkMode()">🌙</button>
-      <button onclick="window.location.href='dashboard.html'" style="background: #22c55e;">Dashboard</button>
+    <div class="summary-card glass-card">
+      <h4>Expenses</h4>
+      <p id="monthlyExpense">₹0</p>
     </div>
-  </nav>
+    <div class="summary-card glass-card">
+      <h4>Remaining Balance</h4>
+      <p id="monthlyBalance">₹0</p>
+    </div>
+  </section>
 
-  <main class="container">
-    <!-- Summary Cards -->
-    <section class="summary">
-      <div class="summary-card glass-card">
-        <h4>Total Income</h4>
-        <p id="monthlyIncome">₹0</p>
-      </div>
-      <div class="summary-card glass-card">
-        <h4>Total Expense</h4>
-        <p id="monthlyExpense">₹0</p>
-      </div>
-      <div class="summary-card glass-card">
-        <h4>Remaining Balance</h4>
-        <p id="monthlyBalance">₹0</p>
-      </div>
-    </section>
+  <section class="mobile-date-view glass-card">
+    <div class="mobile-month-inline" id="mobileMonthSwipe">
+      <span class="month-icon">📅</span>
+      <span id="mobileMonthText" class="month-text"></span>
+    </div>
 
-    <!-- Category-wise Expenses -->
-    <section class="expense-list glass-card" style="margin-top: 20px;">
-      <div class="expense-header">
-        <h3>Expenses by Category</h3>
+    <input
+      type="number"
+      id="mobile-day-input"
+      placeholder="Search by day (1–31)"
+      min="1"
+      max="31"
+    />
 
-      </div>
-      <ul id="monthlyExpenseList"></ul>
-    </section>
+    <div id="mobile-transaction-list">
+      <p class="text-muted">Enter a day to see transactions</p>
+    </div>
+  </section>
 
-    <!-- Date-wise Transactions -->
-    <section class="date-wise glass-card" style="margin-top: 20px; padding: 20px;">
-      <h3 style="margin-bottom: 20px;">Transactions by Date</h3>
-      <div id="dateWiseList"></div>
-    </section>
-  </main>
+  <section class="expense-list glass-card">
+    <h3>Expenses by Category</h3>
+    <div id="expenseHistogram"></div>
+  </section>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <section class="date-wise glass-card desktop-calendar-view">
+    <h3>Transactions by Date</h3>
+    <div id="dateWiseList"></div>
+  </section>
+
+</main>
+
 <script type="module" src="js/monthly.js"></script>
 </body>
 </html>

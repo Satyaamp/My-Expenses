@@ -1,17 +1,93 @@
-/* Month Picker Styling */
-#monthPicker {
-  padding: 14px 20px;
-  border-radius: 10px;
-  background: rgba(255,255,255,0.08);
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.15);
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+.date-wise {
+  margin-top: 24px;
+}
+
+
+.date-wise.glass-card {
+  padding: 24px 28px;
+}
+
+.transactions-header {
+  padding: 20px 22px;
+}
+
+.transactions-header h4 {
+  margin-top: 0;
+}
+
+
+/* Right-side Transactions Panel */
+.transactions-panel {
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden; /* keeps rounded corners clean */
+}
+
+/* Header inside the panel */
+.transactions-header {
+  padding: 22px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.04),
+    rgba(255, 255, 255, 0)
+  );
+}
+
+.transactions-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* Transactions list area */
+.transactions-list {
+  padding: 20px 24px;
+  min-height: 280px; /* keeps panel balanced even when empty */
+}
+
+/* Empty state styling */
+.empty-state {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+  text-align: center;
+}
+
+.empty-state p:first-child {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.empty-state p:last-child {
+  font-size: 14px;
 }
 
 
 
+/* =====================================
+   MONTH PICKER (NAVBAR)
+===================================== */
+#monthPicker {
+  padding: 14px 20px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.08);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
 #monthPicker:hover {
   border-color: rgba(52, 211, 153, 0.5);
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(45, 138, 50, 0.536);
 }
 
 #monthPicker:focus {
@@ -20,66 +96,123 @@
   box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.1);
 }
 
-/* 
-   Specific list styles for monthly view 
-   (inherits container from dashboard.css .expense-list)
-*/
-.expense-list ul {
-  list-style: none;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  padding: 28px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+/* =====================================
+   SUMMARY CARDS
+===================================== */
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
 }
 
-.expense-list li {
+.summary-card p {
+  font-size: 22px;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+/* =====================================
+   EXPENSE HISTOGRAM
+===================================== */
+/* ===============================
+   EXPENSE HISTOGRAM
+================================ */
+.expense-histogram {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.histogram-item {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(25, 111, 29, 0.08);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 7px;
+}
+
+/* Header */
+.histogram-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
-  margin-bottom: 12px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: all 0.2s ease;
+  font-size: 14px;
+  margin-bottom: 6px;
 }
 
-.expense-list li:hover {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
-  border-color: rgba(52, 211, 153, 0.3);
-  transform: translateX(4px);
+.category-name {
+  font-weight: 600;
 }
 
-.expense-list li:last-child {
-  margin-bottom: 0;
+.category-value {
+  font-weight: 600;
+  display: flex;
+  gap: 6px;
+  align-items: center;
 }
 
-/* Calendar Container */
+.category-percent {
+  font-size: 12px;
+  opacity: 0.65;
+}
+
+/* Bar wrapper */
+.histogram-bar-wrapper {
+  height: 10px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 999px;
+  overflow: hidden;
+
+  margin: 8px 0 6px; 
+  position: relative;
+}
+
+.histogram-bar {
+  height: 100%;
+  width: 0;
+  max-width: 100%; 
+
+  background: linear-gradient(90deg, #34d399, #10b981);
+  border-radius: 999px;
+
+  animation: growBar 0.8s ease forwards;
+}
+
+
+.histogram-item:nth-child(1) .histogram-bar { animation-delay: 0.05s; }
+.histogram-item:nth-child(2) .histogram-bar { animation-delay: 0.1s; }
+.histogram-item:nth-child(3) .histogram-bar { animation-delay: 0.15s; }
+.histogram-item:nth-child(4) .histogram-bar { animation-delay: 0.2s; }
+.histogram-item:nth-child(5) .histogram-bar { animation-delay: 0.25s; }
+
+@keyframes growBar {
+  to {
+    width: var(--bar-width);
+  }
+}
+
+.histogram-count {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+
+/* =====================================
+   DESKTOP CALENDAR + TRANSACTIONS
+===================================== */
+.desktop-calendar-view {
+  display: block;
+}
+
 #dateWiseList {
   display: grid;
   grid-template-columns: 1fr 1.5fr;
   gap: 20px;
-  background: rgba(255, 255, 255, 0.05);
+  padding: 28px;
+  background: rgba(255,255,255,0.05);
   backdrop-filter: blur(20px);
   border-radius: 20px;
-  padding: 28px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  min-height: 500px;
-}
-
-/* Calendar View - Left Side */
-.calendar-view {
-  display: flex;
-  flex-direction: column;
-}
-
-.calendar-header {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 18px;
-  font-weight: 600;
-  color: #34d399;
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
 .calendar-grid {
@@ -88,266 +221,298 @@
   gap: 8px;
 }
 
-.calendar-day-label {
-  text-align: center;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 8px;
-  opacity: 0.6;
-  text-transform: uppercase;
-}
-
 .calendar-day {
   aspect-ratio: 1;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
-  transition: all 0.2s ease;
-  position: relative;
-  padding: 4px;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.calendar-day:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(52, 211, 153, 0.5);
-  transform: scale(1.05);
-}
-
-.calendar-day.empty {
-  background: transparent;
-  border: none;
-  cursor: default;
-}
-
-.calendar-day.empty:hover {
-  transform: none;
 }
 
 .calendar-day.selected {
   background: linear-gradient(135deg, #34d399, #10b981);
-  border-color: #34d399;
-  box-shadow: 0 4px 12px rgba(52, 211, 153, 0.4);
+  box-shadow: 0 4px 12px rgba(52,211,153,0.4);
 }
 
-.calendar-day.has-transactions {
-  border-color: #34d399;
+.calendar-day.disabled {
+  opacity: 0.3;
+  pointer-events: none;
 }
 
-.calendar-day.has-transactions::after {
-  content: '';
-  position: absolute;
-  bottom: 4px;
-  width: 4px;
-  height: 4px;
-  background: #34d399;
-  border-radius: 50%;
-}
-
-/* Transactions Panel - Right Side */
+/* =====================================
+   TRANSACTION PANEL
+===================================== */
 .transactions-panel {
-  display: flex;
-  flex-direction: column;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(0, 0, 0, 0.03);
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  overflow: hidden;
-}
-
-.transactions-header {
-  padding: 20px 24px;
-  background: linear-gradient(135deg, rgba(52, 211, 153, 0.2), rgba(16, 185, 129, 0.1));
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.transactions-header h4 {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.transactions-header p {
-  font-size: 14px;
-  opacity: 0.7;
-  margin: 0;
-}
-
-.transactions-list {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
 .transaction-item {
-  padding: 16px;
-  margin-bottom: 12px;
+  padding: 14px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: all 0.2s ease;
-}
-
-.transaction-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
-  transform: translateX(4px);
-}
-
-.transaction-item:last-child {
-  margin-bottom: 0;
-}
-
-.transaction-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
+  background: rgba(255,255,255,0.05);
+  margin-bottom: 10px;
 }
 
 .transaction-amount {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
-}
-
-.transaction-amount.income {
-  color: #34d399;
 }
 
 .transaction-amount.expense {
   color: #f87171;
 }
 
-.transaction-category {
-  display: inline-block;
-  padding: 4px 12px;
-  background: rgba(52, 211, 153, 0.2);
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
+.transaction-amount.income {
   color: #34d399;
 }
 
-.transaction-description {
-  font-size: 14px;
-  opacity: 0.8;
-  margin-top: 4px;
+/* =====================================
+   MOBILE-ONLY ELEMENTS (HIDDEN BY DEFAULT)
+===================================== */
+.mobile-date-view,
+#mobile-day-input,
+#mobile-transaction-list,
+.month-hint {
+  display: none;
 }
 
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  opacity: 0.5;
-  padding: 40px;
-  text-align: center;
-}
-
-.empty-state p:first-child {
-  font-size: 48px;
-  margin-bottom: 16px;
-}
-
+/* =====================================
+   TABLET RESPONSIVE
+===================================== */
 @media (max-width: 1024px) {
+  .summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   #dateWiseList {
     grid-template-columns: 1fr;
   }
-  
-  .transactions-panel {
-    min-height: 400px;
+}
+
+/* =====================================
+   MOBILE ONLY (≤ 768px)
+===================================== */
+@media (max-width: 768px) {
+
+  /* Hide desktop calendar */
+  .desktop-calendar-view {
+    display: none !important;
+  }
+
+  /* Show mobile container */
+  .mobile-date-view {
+    display: block;
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: 16px;
+    background: rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  /* Show mobile-only elements */
+  #mobile-day-input,
+  #mobile-transaction-list,
+  .month-hint {
+    display: block;
+  }
+
+  #mobile-day-input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    font-size: 16px;
+  }
+
+  #mobile-day-input:focus {
+    outline: none;
+    border-color: #34d399;
+    box-shadow: 0 0 0 3px rgba(52,211,153,0.15);
+  }
+
+  #mobile-transaction-list {
+    margin-top: 15px;
+    padding: 16px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  /* Navbar overflow fix */
+  .nav-actions {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .nav-actions button,
+  .nav-actions input {
+    flex: 1 1 auto;
   }
 }
 
-/* Mobile Design - Tabs Layout */
+
+/* =====================================
+   MONTH HINT
+===================================== */
+/* Hide on desktop */
+.month-hint {
+  display: none;
+}
+
+/* Mobile-only month display */
 @media (max-width: 768px) {
-  .expense-list ul {
-    padding: 20px;
-  }
-  
-  /* Mobile Tab Navigation */
-  #dateWiseList {
-    display: block;
-    padding: 0;
-    background: transparent;
-    border: none;
-  }
-  
-  .mobile-tabs {
+  .month-hint {
     display: flex;
-    gap: 8px;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    border-radius: 20px 20px 0 0;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-bottom: none;
-  }
-  
-  .mobile-tab {
-    flex: 1;
-    padding: 12px 16px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    align-items: center;
+    gap: 6px;
+
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+
+    padding: 6px 10px;
+    margin-bottom: 10px;
+
     border-radius: 10px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 600;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .month-icon {
     font-size: 14px;
   }
-  
-  .mobile-tab.active {
-    background: linear-gradient(135deg, #34d399, #10b981);
-    border-color: #34d399;
-    box-shadow: 0 4px 12px rgba(52, 211, 153, 0.3);
+}
+
+/* Hide mobile inline month on desktop */
+.mobile-month-inline {
+  display: none;
+}
+
+/* PHONE ONLY */
+@media (max-width: 768px) {
+  .mobile-month-inline {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    position: relative;
+    width: fit-content;
+
+    padding: 6px 10px;
+    margin-bottom: 10px;
+
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
   }
-  
-  .mobile-tab-content {
+
+  .mobile-month-inline .month-text {
+    white-space: nowrap;
+  }
+
+  /* Invisible month picker overlay */
+  #mobileInlineMonthPicker {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+
+    opacity: 0.01;      
+    z-index: 5;
+    pointer-events: auto; 
+  }
+}
+
+/* Month change hint */
+.month-change-hint {
+  font-size: 11px;
+  font-weight: 400;
+  margin-left: 6px;
+  opacity: 0.6;
+  white-space: nowrap;
+}
+
+/* Hide hint on desktop */
+@media (min-width: 769px) {
+  .month-change-hint {
     display: none;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    border-radius: 0 0 20px 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-top: none;
   }
-  
-  .mobile-tab-content.active {
-    display: block;
-  }
-  
-  .calendar-view {
-    width: 100%;
-  }
-  
-  .calendar-grid {
-    gap: 4px;
-  }
-  
-  .calendar-day {
-    font-size: 12px;
-    padding: 8px 4px;
-  }
-  
-  .transactions-panel {
-    width: 100%;
-    margin-top: 20px;
-    min-height: 300px;
-  }
-  
-  .transaction-amount {
-    font-size: 18px;
-  }
-  
-  .transaction-category {
-    font-size: 11px;
-    padding: 3px 8px;
-  }
+}
+
+/* Default (Dark mode) */
+.month-change-hint {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+
+
+.calendar-day.day-has-tx {
+  border: 1px solid rgba(52, 211, 153, 0.45);
+  box-shadow:
+    0 0 12px rgba(52, 211, 153, 0.35),
+    inset 0 0 10px rgba(34, 171, 68, 0.267);
+}
+
+
+.calendar-day.day-no-tx.selected {
+  border: 2px solid rgba(248, 113, 113, 0.95);
+
+  box-shadow:
+    0 8px 18px rgba(248, 113, 113, 0.6),
+    inset 0 0 12px rgba(255, 255, 255, 0.08) !important;
+
+}
+
+
+
+
+.calendar-day:hover {
+  transform: translateY(-2px);
+  transition: all 0.2s ease;
+}
+
+
+.calendar-day.selected {
+  background: linear-gradient(135deg, #dee5e3, #608d7e);
+  box-shadow: 0 8px 18px rgba(52, 211, 153, 0.6);
+  color: #000;
+  font-weight: 700;
+}
+
+.calendar-day.day-no-tx.selected{
+    background: linear-gradient(
+    135deg,
+    rgb(240, 224, 224),
+    rgba(225, 93, 93, 0.75)
+  ) 
+}
+
+
+.calendar-day.disabled {
+  opacity: 0.25;
+  filter: grayscale(1);
+  pointer-events: none;
+}
+
+.mobile-month-inline::after {
+  content: "← swipe to change month →";
+  font-size: 11px;
+  opacity: 0.5;
+  margin-left: 8px;
 }

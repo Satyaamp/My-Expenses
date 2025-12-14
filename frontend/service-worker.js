@@ -7,6 +7,8 @@ const STATIC_ASSETS = [
   "/signup.html",
   "/dashboard.html",
   "/monthly.html",
+  "/forgot-password.html",
+  "/reset-password.html",
 
   "/css/index.css",
   "/css/glass.css",

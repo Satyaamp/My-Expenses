@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#22c55e">
+  <link rel="shortcut icon" href="assets/icons/home.png" type="image/png">
   <link rel="stylesheet" href="css/index.css" />
  
 </head>
@@ -28,7 +29,7 @@
 <section class="hero">
   <h1>Where Your Money Tells a Story</h1>
   <p>
-    Track income, control expenses, and understand your spending
+    Track income, control expenses and understand your spending
     with clean analytics — all in one secure place.
   </p>
 
@@ -60,14 +61,14 @@
 <section class="app-preview">
   <h2>See DhanRekha in Action</h2>
   <p class="preview-subtitle">
-    A quick look at your dashboard after login — analytics, insights, and complete financial control at your fingertips.
+    A quick look at your dashboard after login — analytics, insights and complete financial control at your fingertips.
   </p>
 
   <div class="preview-grid">
     <div class="preview-card">
       <img src="assets/dashboard.png" alt="Dashboard Overview">
       <h4>Smart Dashboard</h4>
-      <p>View your current balance, total income, and expenses at a glance with beautiful visualizations.</p>
+      <p>View your current balance, total income and expenses at a glance with beautiful visualizations.</p>
     </div>
 
     <div class="preview-card">
@@ -110,11 +111,10 @@
   const installBtn = document.getElementById('installBtn');
 
   window.addEventListener('beforeinstallprompt', (e) => {
-    // Prevent the mini-infobar from appearing on mobile
     e.preventDefault();
-    // Stash the event so it can be triggered later
+
     deferredPrompt = e;
-    // Update UI notify the user they can install the PWA
+   
     installBtn.style.display = 'inline-block';
   });
 
