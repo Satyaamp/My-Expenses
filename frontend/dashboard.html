@@ -26,10 +26,14 @@
     </div>
 
     <div class="nav-actions">
-      <button id="darkModeToggle" onclick="toggleDarkMode()">🌙</button>
+      <div class="nav-actions">
+        <button id="biometricToggle" onclick="toggleBiometric()">
+          🔐 Enable App Lock
+        </button>
 
-      <button onclick="logout()">Logout</button>
-    </div>
+        <button onclick="logout()">Logout</button>
+      </div>
+
   </nav>
 
   <!-- Main Dashboard -->
@@ -154,9 +158,65 @@
 
   </main>
 
+
+  <script>
+  const biometricBtn = document.getElementById("biometricToggle");
+
+  // Set initial state
+  if (localStorage.getItem("biometricEnabled") === "true") {
+    biometricBtn.innerText = "🔓 Disable App Lock";
+  }
+
+  async function toggleBiometric() {
+    if (!window.PublicKeyCredential) {
+      alert("Biometric authentication not supported on this device");
+      return;
+    }
+
+    const enabled = localStorage.getItem("biometricEnabled") === "true";
+
+    if (enabled) {
+      // Disable
+      localStorage.removeItem("biometricEnabled");
+      sessionStorage.removeItem("biometricUnlocked");
+      biometricBtn.innerText = "🔐 Enable App Lock";
+      alert("App lock disabled");
+      return;
+    }
+
+    // Enable biometric (verify once)
+    try {
+      await navigator.credentials.get({
+        publicKey: {
+          challenge: crypto.getRandomValues(new Uint8Array(32)),
+          timeout: 60000,
+          userVerification: "required"
+        }
+      });
+
+      localStorage.setItem("biometricEnabled", "true");
+      biometricBtn.innerText = "🔓 Disable App Lock";
+      alert("App lock enabled successfully");
+
+    } catch (err) {
+      alert("Biometric authentication failed");
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("biometricEnabled");
+    sessionStorage.clear();
+    window.location.href = "index.html";
+  }
+</script>
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
   <script type="module" src="js/dashboard.js"></script>
+  <script src="js/authGuard.js"></script>
+
+
 </body>
 </html>
