@@ -13,12 +13,27 @@ const chartColors = {
 
 import { apiRequest } from "./api.js";
 
+// Categories from backend/src/models/expense.model.js
+const EXPENSE_CATEGORIES = [
+  'Food', 
+  'Transport', 
+  'Groceries', 
+  'Rent', 
+  'Stationery', 
+  'Personal Care',
+  'Electric Bill',  
+  'Water Bill',  
+  'Cylinder',  
+  'Internet Bill',  
+  'EMI',            
+  'Recharge',      
+  'Other'
+];
+
 // Global Chart Instances
 let categoryChart = null;
 let weeklyChart = null;
 let monthlyChart = null;
-
-
 
 
 /* ===============================
@@ -38,6 +53,23 @@ function toggleChartLoading(canvasId, isLoading) {
     const loader = parent.querySelector(".chart-loading");
     if (loader) loader.remove();
   }
+}
+
+/* ===============================
+   POPULATE CATEGORIES
+================================ */
+function populateCategorySelect() {
+  const select = document.getElementById("expenseCategory");
+  if (!select) return;
+
+  select.innerHTML = '<option value="" disabled selected>Select Category</option>';
+  
+  EXPENSE_CATEGORIES.forEach(cat => {
+    const option = document.createElement("option");
+    option.value = cat;
+    option.textContent = cat;
+    select.appendChild(option);
+  });
 }
 
 /* ===============================
@@ -403,6 +435,7 @@ window.resetFilters = function() {
 
 loadDashboard();
 loadRecentExpenses();
+populateCategorySelect();
 
 loadCategoryChart();
 loadWeeklyTrend();
