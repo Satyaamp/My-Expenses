@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dhan₹ekha – User Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#22c55e">
+
+  <link rel="shortcut icon" href="assets/icons/profile.png" type="image/png">
+  
+  <!-- Reusing existing styles for consistency -->
+  <link rel="stylesheet" href="css/glass.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  
+  <style>
+    /* Override dashboard.css body padding on mobile since Profile page lacks the secondary header */
+    @media (max-width: 768px) {
+      body {
+        padding-top: 85px !important;
+      }
+      .profile-container {
+        margin-top: 10px;
+        padding: 20px;
+      }
+    }
+
+    .profile-container {
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 40px;
+      text-align: center;
+    }
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50%;
+      margin: 0 auto 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      border: 2px solid rgba(255,255,255,0.2);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    .edit-btn {
+      background: #FACC15;
+      color: #000;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 30px;
+      font-size: 1rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .edit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(250, 204, 21, 0.4);
+    }
+
+    /* NEW GRID STYLES */
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      text-align: left;
+      margin-bottom: 30px;
+    }
+    @media (max-width: 600px) {
+      .profile-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .profile-card-item {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 15px 20px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: transform 0.2s, background 0.2s;
+    }
+    .profile-card-item:hover {
+      transform: translateY(-3px);
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .icon-box {
+      font-size: 1.5rem;
+      background: rgba(255, 255, 255, 0.1);
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+    }
+    .info-box label {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      opacity: 0.6;
+      margin-bottom: 4px;
+      letter-spacing: 0.5px;
+    }
+    .info-box p {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #fff;
+      word-break: break-word;
+    }
+
+    /* DANGER ZONE */
+    .danger-zone {
+      margin-top: 40px;
+      padding: 25px;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      background: rgba(239, 68, 68, 0.05);
+      border-radius: 16px;
+      text-align: left;
+    }
+    .danger-zone h3 {
+      color: #EF4444;
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+    .delete-btn {
+      background: #EF4444;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .delete-btn:hover {
+      background: #DC2626;
+    }
+  </style>
+</head>
+<body>
+  <script src="js/authGuard.js"></script>
+
+  <nav class="navbar glass-card">
+    <div class="logo">
+        <img src="assets/logo1.png" alt="Dhan₹ekha Logo" />
+        <span>Dhan₹ekha</span>
+    </div>
+    <div class="nav-actions">
+      <button onclick="location.href='dashboard.html'" class="nav-btn-profile">
+        <span class="desktop-text">🏠 Dashboard</span>
+        <span class="mobile-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+      </button>
+      <button onclick="logout()">
+        <span class="desktop-text">Logout</span>
+        <span class="mobile-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="glass-card profile-container">
+      <div class="profile-avatar">👤</div>
+      <h2 style="margin-bottom: 30px;">My Profile</h2>
+      
+      <div id="profileLoading" class="spinner" style="margin: 20px auto;"></div>
+      
+      <div id="profileDetails" style="display: none;">
+        <!-- Content injected by JS -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal hidden">
+    <div class="modal-content glass-card" style="max-width: 400px; text-align: center;">
+      <h3 style="color: #EF4444; margin-top: 0;">Delete Account</h3>
+      <p style="color: #fff; margin-bottom: 25px;">Are you sure you want to delete your account? This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button onclick="confirmDelete()" style="background: #EF4444; color: white;">Yes, Delete</button>
+        <button class="cancel" onclick="closeDeleteModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/profile.js"></script>
+  <script>
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>

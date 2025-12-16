@@ -52,7 +52,21 @@ export async function apiRequest(endpoint, method = "GET", body = null, { skipLo
       body: body ? JSON.stringify(body) : null
     });
 
-    data = await res.json();
+    // Handle 204 No Content (common for DELETE requests)
+    if (res.status === 204) {
+      return null;
+    }
+
+    // Check if response is JSON
+    const contentType = res.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      data = await res.json();
+    } else if (contentType && (contentType.includes("zip") || contentType.includes("octet-stream"))) {
+      data = await res.blob();
+    } else {
+      // Fallback for non-JSON (e.g. HTML error pages)
+      data = { message: await res.text() };
+    }
   } finally {
     if (!skipLoader) {
       activeRequests--;
@@ -64,7 +78,12 @@ export async function apiRequest(endpoint, method = "GET", body = null, { skipLo
   }
 
   if (!res.ok) {
-    throw new Error(data.message || "Request failed");
+    let msg = data.message || "Request failed";
+    // If the error message looks like HTML, use the status text instead
+    if (typeof msg === 'string' && msg.trim().startsWith('<')) {
+      msg = `Request failed: ${res.status} ${res.statusText}`;
+    }
+    throw new Error(msg);
   }
 
   return data;

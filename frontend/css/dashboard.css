@@ -37,23 +37,57 @@
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
+      gap: 15px;
     }
 
 .nav-actions {
   display: flex;
-  gap: 12px;
+  gap: 15px;
   align-items: center;
 }
 
-.navbar button {
-  background: #ff0606;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 8px;
+.mobile-icon {
+  display: inline-block;
+}
+
+.desktop-text {
+  display: none;
+}
+
+/* Glassy Icons for Navbar (Global) */
+.navbar .nav-actions button, 
+.navbar .nav-btn-profile {
+  width: 42px;
+  height: 42px;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-size: 1.2rem !important;
   color: white;
   cursor: pointer;
-  font-size: 1rem;
+  transition: all 0.3s ease;
+}
 
+.navbar .nav-actions button:hover, 
+.navbar .nav-btn-profile:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.navbar .nav-actions button:active, 
+.navbar .nav-btn-profile:active {
+  transform: scale(0.95);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.4) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
 }
 
 #darkModeToggle {
@@ -433,6 +467,13 @@ body.light-mode .glass-card {
   outline: none;
   transition: border-color 0.3s, background 0.3s;
   color-scheme: dark;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none; /* Fix for mobile browsers forcing default white style */
+}
+
+.filters input[type="date"]::placeholder {
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .filters input[type="date"]:focus {
@@ -494,6 +535,7 @@ body.light-mode .glass-card {
   .filters input[type="date"] {
     width: 100%;
     box-sizing: border-box;
+    min-width: 0;
   }
 
   .filter-actions {
@@ -631,12 +673,55 @@ body.light-mode .glass-card {
 
 @media (max-width: 768px) {
   body {
-    padding-top: 150px;
+    padding-top: 130px;
   }
   .navbar-date-range {
     display: none;
   }
   .mobile-date-range {
     display: block;
+    top: 70px;
   }
+
+  .navbar {
+    padding: 10px 15px;
+    gap: 5px;
+  }
+
+  .nav-actions {
+    gap: 6px;
+  }
+
+  .logo span {
+    font-size: 1.1rem;
+  }
+
+  .logo img {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* ===============================
+   PROFILE MODAL STYLES
+================================ */
+.profile-field {
+  margin-bottom: 15px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 8px;
+}
+.profile-field label {
+  display: block;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.profile-field p {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #fff;
 }

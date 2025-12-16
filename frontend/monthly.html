@@ -19,78 +19,52 @@
     }
 
     .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
+      /* Override fixed position from dashboard.css to keep layout flow */
       position: relative;
       top: auto;
     }
 
-    
-
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
     /* --- DESKTOP VIEW (Default) --- */
     .nav-btn {
-      padding: 8px 16px;
+      width: 42px;
+      height: 42px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      font-size: 1.2rem;
+      color: white;
       cursor: pointer;
-      border: none;
-      border-radius: 8px;
-      background: rgba(93, 153, 184, 0.964); /* Subtle bg */
-      color: inherit;
-      font-size: 0.9rem;
-      transition: background 0.3s;
+      transition: all 0.3s ease;
     }
     .nav-btn:hover {
-      background: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+      border-color: rgba(255, 255, 255, 0.3);
     }
-    
-    .mobile-icon { display: none; } /* Hide icons on desktop */
+    .nav-btn:active {
+      transform: scale(0.95);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .mobile-icon { display: inline-block; } 
+    .desktop-text { display: none; }
 
     /* --- MOBILE VIEW (Max Width 768px) --- */
     @media (max-width: 768px) {
       /* Hide elements not needed on mobile */
-      .desktop-only, .desktop-text {
+      .desktop-only {
         display: none;
       }
 
-      .mobile-icon {
-        display: inline-block;
-      }
-
-      /* GLASSY ICON STYLE 
-         Turns buttons into frosted glass tiles 
-      */
-      .nav-btn {
-        width: 42px;
-        height: 42px;
-        padding: 0; 
-        
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        
-        /* Glass Effect */
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        border-radius: 12px; /* Soft rounded corners like iOS */
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        
-        font-size: 1.2rem;
-        transition: transform 0.2s, box-shadow 0.2s;
-      }
-
-      .nav-btn:active {
-        transform: scale(0.92); /* Click press effect */
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
     }
 
     /* BACK TO TOP BUTTON */
@@ -383,7 +357,11 @@
   <div class="nav-actions">
     <button onclick="location.href='dashboard.html'" class="nav-btn" title="Dashboard">
       <span class="desktop-text">Dashboard</span>
-      <span class="mobile-icon">🏠</span>
+      <span class="mobile-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+    </button>
+    <button onclick="location.href='profile.html'" class="nav-btn" title="Profile">
+      <span class="desktop-text">Profile</span>
+      <span class="mobile-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
     </button>
   </div>
 </nav>
