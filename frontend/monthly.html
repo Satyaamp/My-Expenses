@@ -19,6 +19,8 @@
       justify-content: space-between;
       align-items: center;
       padding: 10px 20px;
+      position: relative;
+      top: auto;
     }
 
     
@@ -86,6 +88,262 @@
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
     }
+
+    /* BACK TO TOP BUTTON */
+    #backToTopBtn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(34, 197, 94, 0.9);
+      color: white;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s, transform 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #backToTopBtn.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    #backToTopBtn:hover {
+      transform: translateY(-3px);
+      background: #16a34a;
+    }
+
+    /* CAROUSEL STYLES */
+    .analytics-carousel {
+      margin-top: 24px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .carousel-container {
+      width: 100%;
+      overflow: hidden;
+      transition: height 0.3s ease-out; /* Smooth height resize */
+    }
+    .carousel-track {
+      display: flex;
+      transition: transform 0.3s ease-out;
+      width: 100%;
+      align-items: flex-start; /* Prevent slides from stretching to max height */
+    }
+    .carousel-slide {
+      min-width: 100%;
+      box-sizing: border-box;
+      padding: 0 10px;
+    }
+    .chart-wrapper {
+      height: 300px;
+      width: 100%;
+      position: relative;
+    }
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 15px;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .dot.active {
+      background: #34d399;
+      transform: scale(1.2);
+    }
+    /* Adjust histogram within slide */
+    .scrollable-histogram {
+      /* Allow full height expansion */
+      width: 100%;
+    }
+
+    /* ANIMATION FOR SLIDE CONTENT */
+    .carousel-slide .chart-wrapper,
+    .carousel-slide .scrollable-histogram {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .carousel-slide.active-slide .chart-wrapper,
+    .carousel-slide.active-slide .scrollable-histogram {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: 0.2s; /* Delay to allow slide to settle */
+    }
+
+    /* LIQUID FILL STYLES */
+    .summary-card {
+      position: relative;
+      overflow: hidden; /* Clip the fill */
+      z-index: 1;
+    }
+    .card-content {
+      position: relative;
+      z-index: 5; /* Ensure text stays on top of fill */
+    }
+    .liquid-bg {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 0%; /* JS will animate this */
+      transition: height 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 0;
+      opacity: 0.35; /* Semi-transparent fill */
+    }
+    .liquid-blue { background: #38BDF8; } /* Budget */
+    .liquid-red { background: #EF4444; }  /* Expense */
+    .liquid-green { background: #22C55E; } /* Balance */
+
+    /* HOVER PERCENTAGE */
+    .hover-percentage {
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-top: 4px;
+      opacity: 0;
+      transform: translateY(5px);
+      transition: all 0.3s ease;
+    }
+    .summary-card:hover .hover-percentage {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* MOBILE FIX: Always show percentage because phones don't have hover */
+    @media (max-width: 768px) {
+      .hover-percentage {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* MONTH NAVIGATION BUTTONS */
+    .month-nav-btn {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0 10px;
+      transition: color 0.3s, transform 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .month-nav-btn:hover {
+      color: #fff;
+      transform: scale(1.2);
+    }
+    .month-nav-btn:active {
+      transform: scale(0.9);
+    }
+
+    /* DYNAMIC WATERMARK */
+    .glass-card:not(.navbar):not(.summary-card) {
+      position: relative;
+      overflow: hidden; /* Clip the watermark */
+    }
+    .glass-card:not(.navbar):not(.summary-card)::before {
+      content: var(--watermark-text);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-15deg);
+      font-size: 3rem;
+      font-weight: 900;
+      color: rgba(255, 255, 255, 0.04); /* Very subtle opacity */
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glass-card:not(.navbar):not(.summary-card) > * {
+      position: relative;
+      z-index: 2; /* Ensure content sits above watermark */
+    }
+    @media (max-width: 768px) {
+      .glass-card:not(.navbar):not(.summary-card)::before {
+        font-size: 1.8rem;
+      }
+    }
+
+    /* MONTH SELECT MODAL GRID */
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 15px;
+    }
+    .month-tile {
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: white;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .month-tile:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+    .month-tile.selected {
+      background: #34d399;
+      color: #000;
+      font-weight: 700;
+      border-color: #34d399;
+    }
+    .month-tile:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    /* HORIZONTAL DAY SCROLL (Mobile) */
+    .day-scroll-container {
+      display: flex;
+      overflow-x: auto;
+      gap: 10px;
+      padding: 4px 4px 12px 4px;
+      margin-bottom: 10px;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE/Edge */
+    }
+    .day-scroll-container::-webkit-scrollbar {
+      display: none; /* Chrome/Safari */
+    }
+    .day-bubble {
+      flex: 0 0 auto;
+      width: 46px;
+      height: 54px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .day-bubble span.day-num { font-size: 1.1rem; font-weight: 600; line-height: 1; }
+    .day-bubble span.day-dot { width: 5px; height: 5px; background: #34d399; border-radius: 50%; margin-top: 6px; opacity: 0; }
+    .day-bubble.has-data span.day-dot { opacity: 1; }
+    .day-bubble.active { background: #34d399; color: #000; border-color: #34d399; transform: translateY(-3px); box-shadow: 0 4px 12px rgba(52, 211, 153, 0.4); }
+    .day-bubble.active span.day-dot { background: #000; }
   </style>
 </head>
 <body>
@@ -95,11 +353,7 @@
     <img src="assets/logo1.png" alt="Dhan₹ekha Logo" />
     <span>Dhan₹ekha</span>
   </div>
-
   <div class="nav-actions">
-    <input type="month" id="monthPicker" class="desktop-only">
-    
-    
     <button onclick="location.href='dashboard.html'" class="nav-btn" title="Dashboard">
       <span class="desktop-text">Dashboard</span>
       <span class="mobile-icon">🏠</span>
@@ -109,43 +363,86 @@
 
 <main class="container">
 
+  <div style="position: sticky; top: 0; z-index: 50; display: flex; justify-content: center; align-items: center; gap: 15px; padding: 12px 0; margin-bottom: 1.5rem; background: rgba(15, 32, 39, 0.95); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(255,255,255,0.1); border-radius: 0 0 16px 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+    <button id="prevMonthBtn" class="month-nav-btn" title="Previous Month">❮</button>
+    <h2 id="pageMonthTitle" style="color: #fff; margin: 0; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.2); cursor: pointer; text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 4px;" title="Click to jump to a specific month"></h2>
+    <button id="nextMonthBtn" class="month-nav-btn" title="Next Month">❯</button>
+  </div>
+
   <section class="summary">
     <div class="summary-card glass-card">
-      <h4>Budget Limit</h4>
-      <p id="monthlyIncome">₹0</p>
+      <div class="liquid-bg liquid-blue" id="fillBudget"></div>
+      <div class="card-content">
+        <h4>Budget Limit</h4>
+        <p id="monthlyIncome">₹0</p>
+        <p class="hover-percentage" id="pctIncome">0%</p>
+      </div>
     </div>
     <div class="summary-card glass-card">
-      <h4>Expenses</h4>
-      <p id="monthlyExpense">₹0</p>
+      <div class="liquid-bg liquid-red" id="fillExpense"></div>
+      <div class="card-content">
+        <h4>Expenses</h4>
+        <p id="monthlyExpense">₹0</p>
+        <p class="hover-percentage" id="pctExpense">0%</p>
+      </div>
     </div>
     <div class="summary-card glass-card">
-      <h4>Remaining Balance</h4>
-      <p id="monthlyBalance">₹0</p>
+      <div class="liquid-bg liquid-green" id="fillBalance"></div>
+      <div class="card-content">
+        <h4>Remaining Balance</h4>
+        <p id="monthlyBalance">₹0</p>
+        <p class="hover-percentage" id="pctBalance">0%</p>
+      </div>
     </div>
   </section>
 
   <section class="mobile-date-view glass-card">
-    <div class="mobile-month-inline" id="mobileMonthSwipe">
-      <span class="month-icon">📅</span>
-      <span id="mobileMonthText" class="month-text"></span>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 0 5px;" id="mobileMonthSwipe">
+      <h3 style="margin: 0; font-size: 1.1rem;">Daily Transactions</h3>
+      <span style="font-size: 0.75rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.5px;">Swipe Header ↔</span>
     </div>
 
-    <input
-      type="number"
-      id="mobile-day-input"
-      placeholder="Search by day (1–31)"
-      min="1"
-      max="31"
-    />
+    <!-- New Horizontal Scroll -->
+    <div id="mobile-day-scroll" class="day-scroll-container"></div>
 
     <div id="mobile-transaction-list">
       <p class="text-muted">Enter a day to see transactions</p>
     </div>
   </section>
 
-  <section class="expense-list glass-card">
-    <h3>Expenses by Category</h3>
-    <div id="expenseHistogram"></div>
+  <!-- ANALYTICS CAROUSEL -->
+  <section class="analytics-carousel glass-card">
+    <div class="carousel-container">
+      <div class="carousel-track" id="analyticsTrack">
+        <!-- Slide 1: Daily Trend -->
+        <div class="carousel-slide">
+          <h3>Daily Expense Trend</h3>
+          <div class="chart-wrapper">
+            <canvas id="dailyExpenseChart"></canvas>
+          </div>
+        </div>
+        <!-- Slide 2: Category Distribution (New) -->
+        <div class="carousel-slide">
+          <h3>Category Distribution</h3>
+          <div class="chart-wrapper">
+            <canvas id="categoryPieChart"></canvas>
+          </div>
+        </div>
+        <!-- Slide 3: Cumulative Spending -->
+        <div class="carousel-slide">
+          <h3>Cumulative Spending</h3>
+          <div class="chart-wrapper">
+            <canvas id="cumulativeChart"></canvas>
+          </div>
+        </div>
+        <!-- Slide 3: Histogram List -->
+        <div class="carousel-slide">
+          <h3>Expenses by Category</h3>
+          <div id="expenseHistogram" class="scrollable-histogram"></div>
+        </div>
+      </div>
+    </div>
+    <div class="carousel-dots" id="carouselDots"></div>
   </section>
 
   <section class="date-wise glass-card desktop-calendar-view">
@@ -155,6 +452,24 @@
 
 </main>
 
+<button id="backToTopBtn" title="Back to Top">↑</button>
+
+<!-- MONTH SELECTION MODAL -->
+<div id="monthSelectModal" class="modal hidden">
+  <div class="modal-content glass-card" style="max-width: 340px; text-align: center;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+      <button id="modalPrevYear" class="nav-btn">❮</button>
+      <span id="modalYearDisplay" style="font-size: 1.4rem; font-weight: 700;"></span>
+      <button id="modalNextYear" class="nav-btn">❯</button>
+    </div>
+    
+    <div id="modalMonthGrid" class="month-grid"></div>
+
+    <button onclick="document.getElementById('monthSelectModal').classList.add('hidden')" style="margin-top: 20px; width: 100%; padding: 10px; background: rgba(255,255,255,0.1); border: none; color: white; border-radius: 8px; cursor: pointer;">Cancel</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script type="module" src="js/monthly.js"></script>
 </body>
 </html>
