@@ -14,6 +14,10 @@
     /* =========================================
        NAVBAR RESPONSIVENESS & GLASS ICONS
     ========================================= */
+    body {
+      padding-top: 0;
+    }
+
     .navbar {
       display: flex;
       justify-content: space-between;
@@ -344,6 +348,29 @@
     .day-bubble.has-data span.day-dot { opacity: 1; }
     .day-bubble.active { background: #34d399; color: #000; border-color: #34d399; transform: translateY(-3px); box-shadow: 0 4px 12px rgba(52, 211, 153, 0.4); }
     .day-bubble.active span.day-dot { background: #000; }
+
+    /* TRANSACTION COUNT BADGE */
+    .tx-count-badge {
+      margin-left: 5px;
+      background: rgba(250, 204, 21, 0.15);
+      border: 1px solid rgba(250, 204, 21, 0.3);
+      color: #fef9c3;
+      backdrop-filter: blur(4px);
+      border-radius: 12px;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: 0 4px 10px rgba(250, 204, 21, 0.1);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    @media (max-width: 768px) {
+      .tx-count-badge {
+        display: none !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -367,6 +394,7 @@
     <button id="prevMonthBtn" class="month-nav-btn" title="Previous Month">❮</button>
     <h2 id="pageMonthTitle" style="color: #fff; margin: 0; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.2); cursor: pointer; text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 4px;" title="Click to jump to a specific month"></h2>
     <button id="nextMonthBtn" class="month-nav-btn" title="Next Month">❯</button>
+    <div id="monthTxCount" class="tx-count-badge"><span>📊</span> 0 Txns</div>
   </div>
 
   <section class="summary">
@@ -446,7 +474,7 @@
   </section>
 
   <section class="date-wise glass-card desktop-calendar-view">
-    <h3>Transactions by Date</h3>
+    <h3>Daily Transactions <span id="calendarViewMonthTitle" style="font-size: 1.5rem; color: #34d399; margin-left: 10px;"></span></h3>
     <div id="dateWiseList"></div>
   </section>
 

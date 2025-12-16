@@ -9,6 +9,7 @@ const mobileListContainer = document.getElementById("mobile-transaction-list");
 const mobileMonthText = document.getElementById("mobileMonthText");
 const mobileMonthSwipe = document.getElementById("mobileMonthSwipe");
 const pageMonthTitle = document.getElementById("pageMonthTitle");
+const calendarViewMonthTitle = document.getElementById("calendarViewMonthTitle");
 const backToTopBtn = document.getElementById("backToTopBtn");
 const histogramSort = document.getElementById("histogramSort");
 const prevMonthBtn = document.getElementById("prevMonthBtn");
@@ -16,6 +17,7 @@ const nextMonthBtn = document.getElementById("nextMonthBtn");
 const monthSelectModal = document.getElementById("monthSelectModal");
 const modalYearDisplay = document.getElementById("modalYearDisplay");
 const modalMonthGrid = document.getElementById("modalMonthGrid");
+const monthTxCount = document.getElementById("monthTxCount");
 
 let currentMonthExpenses = [];
 let currentMonthCategories = [];
@@ -73,6 +75,21 @@ if (nextMonthBtn) nextMonthBtn.addEventListener("click", () => changeMonth(1));
 if (pageMonthTitle) {
   pageMonthTitle.addEventListener("click", () => {
     openMonthModal();
+  });
+}
+
+/* Transaction Count Badge Click -> Scroll to List */
+if (monthTxCount) {
+  monthTxCount.style.cursor = "pointer";
+  monthTxCount.addEventListener("click", () => {
+    const isMobile = window.innerWidth <= 768;
+    const target = isMobile 
+      ? document.querySelector(".mobile-date-view") 
+      : document.querySelector(".date-wise");
+
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   });
 }
 
@@ -236,6 +253,13 @@ async function loadDateWiseExpenses(month, year) {
   const res = await apiRequest(`/expenses/month?month=${month}&year=${year}`);
   currentMonthExpenses = res.data;
 
+  // Update Transaction Count with Animation
+  if (monthTxCount) {
+    monthTxCount.style.transform = "scale(1.2)";
+    monthTxCount.innerHTML = `<span>📊</span> ${currentMonthExpenses.length} Txns`;
+    setTimeout(() => monthTxCount.style.transform = "scale(1)", 200);
+  }
+
   renderCalendar(+year, +month - 1);
   renderDailyChart(currentMonthExpenses, +year, +month);
   renderCumulativeChart(currentMonthExpenses, +year, +month);
@@ -319,9 +343,6 @@ function renderCalendar(year, month) {
 
   let html = `
     <div class="calendar-view">
-      <div class="calendar-header">
-        ${new Date(year, month).toLocaleString("default", { month: "long" })} ${year}
-      </div>
       <div class="calendar-grid">
         ${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
           .map(d => `<div class="calendar-day-label">${d}</div>`).join("")}
@@ -385,8 +406,9 @@ function selectDate(dateStr, cell) {
   const list = document.getElementById("transactionsList");
   const tx = getTransactionsForDate(dateStr);
 
-  document.getElementById("selectedDateTitle").innerText =
-    new Date(dateStr).toDateString();
+  const dateText = new Date(dateStr).toDateString();
+  const badgeStyle = "margin-left: 10px; background: rgba(250, 204, 21, 0.15); border: 1px solid rgba(250, 204, 21, 0.3); color: #fef9c3; border-radius: 12px; padding: 4px 10px; font-size: 0.8rem; vertical-align: middle;";
+  document.getElementById("selectedDateTitle").innerHTML = `${dateText} <span style="${badgeStyle}">${tx.length} Txns</span>`;
 
   if (!tx.length) {
     list.innerHTML =
@@ -421,6 +443,7 @@ function updateMobileMonthText() {
 
   if (mobileMonthText) mobileMonthText.innerText = text;
   if (pageMonthTitle) pageMonthTitle.innerText = text;
+  if (calendarViewMonthTitle) calendarViewMonthTitle.innerText = text;
 
   // Update Watermark CSS Variable
   document.documentElement.style.setProperty('--watermark-text', `"${text}"`);

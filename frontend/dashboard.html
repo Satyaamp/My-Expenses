@@ -25,6 +25,9 @@
         <span>Dhan₹ekha</span>
     </div>
 
+    <!-- Desktop Date Range (Center) -->
+    <div id="navbarDateRange" class="navbar-date-range"></div>
+
     <div class="nav-actions">
 
 
@@ -32,13 +35,20 @@
     </div>
   </nav>
 
+  <!-- Mobile Date Range (Sticky below navbar) -->
+  <div id="mobileDateRange" class="mobile-date-range glass-card"></div>
+
   <!-- Main Dashboard -->
   <main class="container">
 
     <!-- Balance Card -->
     <section class="balance-card glass-card">
-      <h3>Remaining Balance</h3>
-      <p id="balance">₹0</p>
+      <div class="liquid-bg liquid-green" id="fillBalance"></div>
+      <div class="card-content">
+        <h3>Remaining Balance</h3>
+        <p id="balance">₹0</p>
+        <p class="hover-percentage" id="pctBalance">0%</p>
+      </div>
     </section>
 
     <!-- Quick Actions -->
@@ -50,12 +60,20 @@
     <!-- Summary Cards -->
     <section class="summary">
       <div class="summary-card glass-card">
-        <h4>Total Income</h4>
-        <p id="totalIncome">₹0</p>
+        <div class="liquid-bg liquid-blue" id="fillIncome"></div>
+        <div class="card-content">
+          <h4>Total Income</h4>
+          <p id="totalIncome">₹0</p>
+          <p class="hover-percentage" id="pctIncome">0%</p>
+        </div>
       </div>
       <div class="summary-card glass-card">
-        <h4>Total Expense</h4>
-        <p id="totalExpense">₹0</p>
+        <div class="liquid-bg liquid-red" id="fillExpense"></div>
+        <div class="card-content">
+          <h4>Total Expense</h4>
+          <p id="totalExpense">₹0</p>
+          <p class="hover-percentage" id="pctExpense">0%</p>
+        </div>
       </div>
     </section>
 
@@ -103,36 +121,79 @@
 </div>
 
 
-<section class="filters glass-card" style="margin-top: 20px; padding: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-  <label style="color: white; font-weight: 500;">Date Range:</label>
-  <input type="date" id="startDate" style="padding: 8px; border-radius: 6px; border: none;">
-  <input type="date" id="endDate" style="padding: 8px; border-radius: 6px; border: none;">
-  <button onclick="filterCharts()" style="padding: 8px 16px; border-radius: 6px; border: none; background: #22c55e; color: white; cursor: pointer;">Filter</button>
-  <button onclick="resetFilters()" style="padding: 8px 16px; border-radius: 6px; border: none; background: #64748b; color: white; cursor: pointer;">Reset</button>
+<section class="filters glass-card">
+  <div class="filter-group">
+    <label>Date Range:</label>
+    <div class="date-inputs">
+      <input type="date" id="startDate" placeholder="dd-mm-yyyy">
+      <input type="date" id="endDate" placeholder="dd-mm-yyyy">
+    </div>
+  </div>
+  <div class="filter-actions">
+    <button onclick="filterCharts()" class="btn-filter">Filter</button>
+    <button onclick="resetFilters()" class="btn-reset">Reset</button>
+  </div>
 </section>
 
-<section class="charts">
+<!-- ANALYTICS CAROUSEL -->
+<section class="analytics-carousel glass-card" style="margin-top: 30px;">
+  <div class="carousel-container">
+    <div class="carousel-track" id="analyticsTrack">
+      
+      <!-- Slide 1: Category Distribution -->
+      <div class="carousel-slide">
+        <h3>Spending by Category</h3>
+        <div class="chart-wrapper">
+          <canvas id="categoryChart"></canvas>
+        </div>
+      </div>
 
-  <!-- Category Pie -->
-  <div class="chart-card glass-card">
-    <h3>Spending by Category</h3>
-    <canvas id="categoryChart"></canvas>
+      <!-- Slide 2: Weekly Trend -->
+      <div class="carousel-slide">
+        <h3>Last 7 Days Trend</h3>
+        <div class="chart-wrapper">
+          <canvas id="weeklyChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Slide 4: Yearly Overview (New) -->
+      <div class="carousel-slide">
+        <h3>Yearly Income vs Expense</h3>
+        <div class="chart-wrapper">
+          <canvas id="yearlyChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Slide 5: Day of Week Analysis (New) -->
+      <div class="carousel-slide">
+        <h3>Busiest Spending Days</h3>
+        <div class="chart-wrapper">
+          <canvas id="dayOfWeekChart"></canvas>
+        </div>
+      </div>
+
+    </div>
   </div>
-
-  <!-- Weekly Trend -->
-  <div class="chart-card glass-card">
-    <h3>Last 7 Days Trend</h3>
-    <canvas id="weeklyChart"></canvas>
-  </div>
-
-  <!-- Monthly Histogram -->
-  <div class="chart-card glass-card">
-    <h3>Monthly Expenses</h3>
-    <canvas id="monthlyChart"></canvas>
-  </div>
-
+  <div class="carousel-dots" id="carouselDots"></div>
 </section>
 
+<!-- Monthly Expenses (Standalone) -->
+<section class="glass-card" style="margin-top: 30px; padding: 20px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+    <h3 style="margin: 0;">Monthly Expenses</h3>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span id="monthlyYearTotal" style="font-size: 0.9rem; font-weight: 600; color: #34d399;"></span>
+      <select id="monthlyChartYear" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 6px; padding: 4px 8px; outline: none; cursor: pointer; font-size: 0.9rem;">
+        <!-- Options populated by JS -->
+      </select>
+    </div>
+  </div>
+  <div class="chart-scroll-wrapper">
+    <div id="monthlyChartContainer">
+      <canvas id="monthlyChart"></canvas>
+    </div>
+  </div>
+</section>
 
 
 
@@ -145,14 +206,28 @@
 
 
 
-  <ul id="expenseList">
-    <li>Loading expenses...</li>
-  </ul>
+  <div class="table-responsive">
+    <table class="expense-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Amount</th>
+          <th>Category</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody id="expenseTableBody">
+        <tr><td colspan="4" style="text-align:center; padding: 20px;">Loading expenses...</td></tr>
+      </tbody>
+    </table>
+  </div>
 </section>
 
 
 
   </main>
+
+  <button id="backToTopBtn" title="Back to Top">↑</button>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
