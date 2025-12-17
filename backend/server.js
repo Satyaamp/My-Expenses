@@ -1,8 +1,18 @@
 require('dotenv').config();
 const app = require('./src/app');
 const connectDB = require('./src/config/db');
-const { PORT } = require('./src/config/env');
 
-connectDB();
+// ✅ Render-safe port
+const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => console.log(`Server running on ${PORT}`));
+// ✅ Connect DB before starting server
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server running on ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error('DB connection failed:', err);
+    process.exit(1);
+  });
