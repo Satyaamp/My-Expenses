@@ -18,6 +18,7 @@ const monthSelectModal = document.getElementById("monthSelectModal");
 const modalYearDisplay = document.getElementById("modalYearDisplay");
 const modalMonthGrid = document.getElementById("modalMonthGrid");
 const monthTxCount = document.getElementById("monthTxCount");
+const downloadPdfBtn = document.getElementById("downloadPdfBtn");
 
 let currentMonthExpenses = [];
 let currentMonthCategories = [];
@@ -91,6 +92,11 @@ if (monthTxCount) {
       target.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   });
+}
+
+/* Download PDF Listener */
+if (downloadPdfBtn) {
+  downloadPdfBtn.addEventListener("click", downloadMonthlyReport);
 }
 
 /* ===============================
@@ -406,9 +412,10 @@ function selectDate(dateStr, cell) {
   const list = document.getElementById("transactionsList");
   const tx = getTransactionsForDate(dateStr);
 
+  const totalAmount = tx.reduce((sum, t) => sum + Number(t.amount), 0);
   const dateText = new Date(dateStr).toDateString();
   const badgeStyle = "margin-left: 10px; background: rgba(250, 204, 21, 0.15); border: 1px solid rgba(250, 204, 21, 0.3); color: #fef9c3; border-radius: 12px; padding: 4px 10px; font-size: 0.8rem; vertical-align: middle;";
-  document.getElementById("selectedDateTitle").innerHTML = `${dateText} <span style="${badgeStyle}">${tx.length} Txns</span>`;
+  document.getElementById("selectedDateTitle").innerHTML = `${dateText} <span style="${badgeStyle}">${tx.length} Txns</span> <span style="${badgeStyle}">Total: ₹${totalAmount}</span>`;
 
   if (!tx.length) {
     list.innerHTML =
@@ -878,7 +885,7 @@ function setupCarousel() {
 /* ===============================
    TOAST NOTIFICATION HELPER
 ================================ */
-function showToast(message) {
+function showToast(message, type = "error") {
   // 1. Play Beep Sound (Short, subtle alert)
   try {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -937,6 +944,13 @@ function showToast(message) {
     document.body.appendChild(toast);
   }
 
+  // Update style based on type
+  if (type === "success") {
+    toast.style.background = "rgba(34, 197, 94, 0.85)";
+  } else {
+    toast.style.background = "rgba(220, 38, 38, 0.75)";
+  }
+
   // 3. Set text and show
   toast.innerText = message;
   toast.style.opacity = "1";
@@ -950,4 +964,221 @@ function showToast(message) {
     toast.style.opacity = "0";
     toast.style.transform = "translateX(-50%) translateY(20px)";
   }, 2000);
+}
+
+/* ===============================
+   PDF GENERATION – MONTHLY REPORT
+================================ */
+
+/**
+ * Convert image URL to Base64 for jsPDF
+ */
+async function toDataURL(url) {
+  const response = await fetch(url);
+  const blob = await response.blob();
+
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function downloadMonthlyReport() {
+  if (!currentMonthExpenses || currentMonthExpenses.length === 0) {
+    showToast("No transactions to download");
+    return;
+  }
+
+  showToast("Downloading report...");
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  /* ===============================
+     HELPERS
+  ================================ */
+
+  const formatAmount = (val) =>
+    Number.isInteger(val) ? val : val.toFixed(2);
+
+  /* ===============================
+     HEADER / BANNER
+  ================================ */
+
+  doc.setFillColor(15, 32, 39);
+  doc.rect(0, 0, 210, 40, "F");
+
+  // Logo
+  try {
+    const logo = await toDataURL("assets/logo1.png");
+    doc.addImage(logo, "PNG", 14, 8, 24, 24);
+  } catch {}
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(22);
+  doc.setTextColor(34, 197, 94);
+  doc.text("DhanRekha", 44, 20);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(12);
+  doc.setTextColor(255);
+  doc.text("Monthly Report", 44, 30);
+
+  const [year, month] = currentMonth.split("-");
+  const dateObj = new Date(year, month - 1);
+  const monthName = dateObj.toLocaleString("en-IN", { month: "long" });
+
+  doc.setFontSize(16);
+  doc.text(`${monthName} ${year}`, 196, 25, { align: "right" });
+
+  /* ===============================
+     SUMMARY
+  ================================ */
+
+  const incomeText = document.getElementById("monthlyIncome").innerText.replace(/₹/g, "");
+  const expenseText = document.getElementById("monthlyExpense").innerText.replace(/₹/g, "");
+  const balanceText = document.getElementById("monthlyBalance").innerText.replace(/₹/g, "");
+
+  const balanceValue = parseFloat(balanceText);
+
+  doc.setFontSize(11);
+  doc.setTextColor(0);
+
+  doc.text(`Total Income: Rs. ${incomeText}`, 14, 50);
+  doc.text(`Total Expense: Rs. ${expenseText}`, 80, 50);
+
+  doc.setTextColor(balanceValue < 0 ? 220 : 22, balanceValue < 0 ? 38 : 163, balanceValue < 0 ? 38 : 74);
+  doc.text(`Balance: Rs. ${balanceText}`, 150, 50);
+  doc.setTextColor(0);
+
+  /* ===============================
+     PREPARED FOR (7)
+  ================================ */
+
+  let userName = "User";
+  try {
+    const userRes = await apiRequest('/auth/me', 'GET', null, { skipLoader: true });
+    if (userRes.data && userRes.data.name) {
+      userName = userRes.data.name;
+    }
+  } catch (err) {
+    console.warn("Could not fetch user name for PDF report.", err);
+  }
+  doc.setFontSize(10);
+  doc.setTextColor(80);
+  doc.text(`Prepared for: ${userName}`, 14, 56);
+  doc.setTextColor(0);
+
+  /* ===============================
+     HIGHEST & LOWEST EXPENSE (3)
+  ================================ */
+
+  let highest = null;
+  let lowest = null;
+
+  currentMonthExpenses.forEach(tx => {
+    if (!highest || tx.amount > highest.amount) highest = tx;
+    if (!lowest || tx.amount < lowest.amount) lowest = tx;
+  });
+
+  doc.setFont("helvetica", "bold");
+  doc.text("Spending Highlights", 14, 64);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+
+  if (highest) {
+    doc.text(
+      `Highest: ${highest.category} – Rs. ${formatAmount(highest.amount)} (${new Date(highest.date).toLocaleDateString("en-IN")})`,
+      14,
+      70
+    );
+  }
+
+  if (lowest) {
+    doc.text(
+      `Lowest: ${lowest.category} – Rs. ${formatAmount(lowest.amount)} (${new Date(lowest.date).toLocaleDateString("en-IN")})`,
+      14,
+      76
+    );
+  }
+
+  /* ===============================
+     CATEGORY SUMMARY (8)
+  ================================ */
+
+  const categoryTotals = {};
+  currentMonthExpenses.forEach(tx => {
+    categoryTotals[tx.category] =
+      (categoryTotals[tx.category] || 0) + tx.amount;
+  });
+
+  const categoryTable = Object.entries(categoryTotals)
+    .sort(([, a], [, b]) => b - a) // Sort by amount, descending
+    .map(([cat, amt]) => [
+      cat, `Rs. ${formatAmount(amt)}`
+    ]);
+
+  doc.autoTable({
+    startY: 82,
+    head: [["Category", "Total"]],
+    body: categoryTable,
+    theme: "striped",
+    headStyles: { fillColor: [22, 163, 74], textColor: 255 },
+    styles: { fontSize: 10 }
+  });
+
+  /* ===============================
+     TRANSACTIONS TABLE
+  ================================ */
+
+  const tableData = currentMonthExpenses.map(tx => [
+    new Date(tx.date).toLocaleDateString("en-IN"),
+    tx.category,
+    tx.description || "-",
+    `Rs. ${formatAmount(tx.amount)}`
+  ]);
+
+  doc.autoTable({
+    startY: doc.lastAutoTable.finalY + 10,
+    head: [["Date", "Category", "Description", "Amount"]],
+    body: tableData,
+    theme: "grid",
+    headStyles: { fillColor: [20, 83, 45], textColor: 255 },
+    columnStyles: {
+      3: { halign: "right", fontStyle: "bold", textColor: [220, 38, 38] }
+    },
+
+    /* ===============================
+       PAGE HEADER + FOOTER (6)
+    ================================ */
+
+    didDrawPage: data => {
+      const h = doc.internal.pageSize.getHeight();
+      const w = doc.internal.pageSize.getWidth();
+
+
+
+      // Footer
+      doc.setFontSize(8);
+      doc.text(
+        "DhanRekha • Where Your Money Tells a Story",
+        w / 2,
+        h - 5,
+        { align: "center" }
+      );
+
+      doc.text(`Page ${data.pageNumber}`, w - 14, h - 10, { align: "right" });
+      doc.text(new Date().toLocaleString("en-IN"), 14, h - 10);
+    }
+  });
+
+  /* ===============================
+     SAVE FILE
+  ================================ */
+
+  doc.save(`DhanRekha_Monthly_Report_${monthName}_${year}.pdf`);
+  showToast("Report downloaded successfully!", "success");
 }

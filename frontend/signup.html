@@ -103,6 +103,45 @@
       opacity: 0.7;
       user-select: none;
     }
+    /* Password Rules Card */
+    .password-rules {
+      margin-top: 12px;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      text-align: left;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.3s ease;
+      display: none; /* Hidden by default until focus */
+    }
+    .password-rules.visible {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    .rule-item {
+      margin: 5px 0;
+      color: rgba(255, 255, 255, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: color 0.2s;
+    }
+    .rule-item.valid { color: #4ade80; }
+    .rule-item.invalid { color: #f87171; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Loading Dots Animation */
+    .loading-dots::after {
+      content: '';
+      animation: dot-cycle 1.5s infinite;
+    }
+    @keyframes dot-cycle {
+      0% { content: '.'; }
+      33% { content: '..'; }
+      66% { content: '...'; }
+      100% { content: ''; }
+    }
   </style>
 </head>
 <body>
@@ -114,7 +153,7 @@
     <form id="signupForm">
       <div class="form-group">
         <label for="name">Full Name</label>
-        <input type="text" id="name" placeholder="John Doe" required />
+        <input type="text" id="name" placeholder="Satyam Kumar" required />
       </div>
 
       <div class="form-group">
@@ -128,9 +167,16 @@
           <input type="password" id="password" placeholder="Create a password" required />
           <span class="toggle-password" onclick="togglePassword()">👁️</span>
         </div>
+        <div id="passwordRules" class="password-rules">
+          <div class="rule-item" id="ruleLength">⚪ At least 8 characters</div>
+          <div class="rule-item" id="ruleNumber">⚪ At least one number</div>
+          <div class="rule-item" id="ruleUpper">⚪ At least one uppercase letter</div>
+          <div class="rule-item" id="ruleLower">⚪ At least one lowercase letter</div>
+          <div class="rule-item" id="ruleSpecial">⚪ At least one special character</div>
+        </div>
       </div>
 
-      <button type="submit">Sign Up</button>
+      <button type="submit" id="signupBtn" disabled style="opacity: 0.5; cursor: not-allowed;">Sign Up</button>
     </form>
 
     <div class="links">
@@ -151,6 +197,55 @@
         toggleIcon.textContent = '👁️';
       }
     }
+
+    // Password Strength Logic
+    const passwordInput = document.getElementById('password');
+    const rulesCard = document.getElementById('passwordRules');
+    const signupBtn = document.getElementById('signupBtn');
+    
+    const ruleLength = document.getElementById('ruleLength');
+    const ruleNumber = document.getElementById('ruleNumber');
+    const ruleUpper = document.getElementById('ruleUpper');
+    const ruleLower = document.getElementById('ruleLower');
+    const ruleSpecial = document.getElementById('ruleSpecial');
+
+    passwordInput.addEventListener('focus', () => {
+      rulesCard.classList.add('visible');
+    });
+
+    passwordInput.addEventListener('input', () => {
+      const val = passwordInput.value;
+      let isValid = true;
+
+      // Helper to update rule UI
+      const updateRule = (element, condition) => {
+        if (condition) {
+          element.classList.add('valid');
+          element.classList.remove('invalid');
+          element.innerText = '✅ ' + element.innerText.substring(2);
+        } else {
+          element.classList.remove('valid');
+          // Only mark invalid if user has started typing
+          if (val.length > 0) element.classList.add('invalid');
+          else element.classList.remove('invalid');
+          
+          element.innerText = '⚪ ' + element.innerText.substring(2);
+          if (val.length > 0 && !condition) element.innerText = '❌ ' + element.innerText.substring(2);
+          
+          isValid = false;
+        }
+      };
+
+      updateRule(ruleLength, val.length >= 8);
+      updateRule(ruleNumber, /\d/.test(val));
+      updateRule(ruleUpper, /[A-Z]/.test(val));
+      updateRule(ruleLower, /[a-z]/.test(val));
+      updateRule(ruleSpecial, /[^A-Za-z0-9]/.test(val));
+
+      signupBtn.disabled = !isValid;
+      signupBtn.style.opacity = isValid ? '1' : '0.5';
+      signupBtn.style.cursor = isValid ? 'pointer' : 'not-allowed';
+    });
   </script>
   <script type="module" src="js/signup.js"></script>
 </body>

@@ -17,10 +17,11 @@
     /* Override dashboard.css body padding on mobile since Profile page lacks the secondary header */
     @media (max-width: 768px) {
       body {
-        padding-top: 85px !important;
+        padding-top: 65px !important;
+        background: #000 !important;
       }
       .profile-container {
-        margin-top: 10px;
+        margin-top: 0;
         padding: 20px;
       }
     }
@@ -32,18 +33,109 @@
       text-align: center;
     }
     .profile-avatar {
-      width: 100px;
-      height: 100px;
-      background: rgba(255,255,255,0.1);
+      width: 110px;
+      height: 110px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
       border-radius: 50%;
-      margin: 0 auto 25px;
+      margin: 0 auto 15px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 3.5rem;
-      border: 2px solid rgba(255,255,255,0.2);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      font-size: 3rem;
+      border: 1px solid rgba(255,255,255,0.15);
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.2); /* Green glow */
+      position: relative;
     }
+    
+    .profile-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .profile-name {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin: 0 0 4px 0;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+    .profile-email {
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.5);
+      margin: 0 0 5px 0;
+    }
+    .join-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+      border-radius: 20px;
+      font-size: 0.75rem;
+      color: #86efac;
+      font-weight: 500;
+    }
+    .join-badge.bronze {
+      background: rgba(251, 146, 60, 0.15);
+      border-color: rgba(251, 146, 60, 0.4);
+      color: #fdba74;
+    }
+    .join-badge.silver {
+      background: rgba(148, 163, 184, 0.15);
+      border-color: rgba(148, 163, 184, 0.4);
+      color: #e2e8f0;
+    }
+    .join-badge.gold {
+      background: rgba(250, 204, 21, 0.15);
+      border-color: rgba(250, 204, 21, 0.4);
+      color: #fde047;
+    }
+
+    /* MENU LIST (PWA Style) */
+    .menu-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 25px;
+    }
+    .menu-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 16px 20px;
+      border-radius: 16px;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+      width: 100%;
+    }
+    .menu-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateX(4px);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    .menu-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .menu-icon {
+      width: 38px;
+      height: 38px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.9);
+    }
+    .menu-arrow {
+      opacity: 0.3;
+      font-size: 1.2rem;
+    }
+
     .edit-btn {
       background: #FACC15;
       color: #000;
@@ -115,6 +207,107 @@
       word-break: break-word;
     }
 
+    /* FINTECH STATS GRID */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 30px 0;
+    }
+    .stat-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 16px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card:hover {
+      background: rgba(255, 255, 255, 0.06);
+      transform: translateY(-4px);
+      border-color: rgba(34, 197, 94, 0.4);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .stat-value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+      background: linear-gradient(90deg, #fff, #86efac);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .stat-label {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .stat-card {
+        flex-direction: row-reverse;
+        justify-content: space-between;
+        padding: 14px 20px;
+      }
+      .stat-value {
+        margin-bottom: 0;
+        font-size: 1.1rem;
+      }
+      .stat-label {
+        font-size: 0.85rem;
+        text-align: left;
+      }
+    }
+
+    /* SPINNER FOR STATS */
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .small-spinner {
+      width: 24px;
+      height: 24px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top: 3px solid #fff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+    }
+
+    /* REFRESH BUTTON */
+    .refresh-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.7);
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .refresh-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+    .refresh-spin {
+      animation: spin 1s linear infinite;
+      pointer-events: none;
+    }
+
     /* DANGER ZONE */
     .danger-zone {
       margin-top: 40px;
@@ -142,6 +335,156 @@
     .delete-btn:hover {
       background: #DC2626;
     }
+
+    .stats-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 8px;
+    }
+
+    /* TIMELINE STYLES */
+    .timeline-section {
+      margin-top: 30px;
+      text-align: left;
+    }
+    .timeline-header {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+    }
+    .timeline-list {
+      border-left: 2px solid rgba(255, 255, 255, 0.1);
+      padding-left: 20px;
+      margin-left: 10px;
+    }
+    .timeline-item {
+      position: relative;
+      margin-bottom: 25px;
+    }
+    .timeline-dot {
+      position: absolute;
+      left: -27px;
+      top: 6px;
+      width: 12px;
+      height: 12px;
+      background: #34d399;
+      border-radius: 50%;
+      box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.15);
+    }
+    .timeline-content {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 12px 16px;
+      transition: transform 0.2s;
+    }
+    .timeline-content:hover {
+      transform: translateX(5px);
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .t-date {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 4px;
+      display: block;
+    }
+    .t-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .t-desc {
+      font-weight: 500;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+    .t-amount {
+      color: #ef4444;
+      font-weight: 600;
+    }
+
+    /* DESKTOP LAYOUT (Large Screens) */
+    @media (min-width: 1024px) {
+      .profile-container {
+        max-width: 1100px;
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 40px;
+        padding: 50px;
+        align-items: start;
+        text-align: left;
+      }
+
+      .profile-header {
+        grid-column: 1;
+        grid-row: 1 / span 3;
+        grid-row: 1;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        padding: 50px 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        position: sticky;
+        top: 100px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      }
+
+      .profile-avatar {
+        width: 140px;
+        height: 140px;
+        font-size: 4rem;
+        margin-bottom: 20px;
+      }
+
+      .profile-name {
+        font-size: 2rem;
+      }
+
+      /* Right Column Content */
+      .stats-actions,
+      .stats-grid,
+      .menu-list,
+      .timeline-section {
+      .right-column-content {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+      }
+
+      .stats-actions {
+        margin-bottom: 0;
+      }
+      
+      .stats-grid {
+        margin-top: 10px;
+        gap: 20px;
+      }
+      
+      .stat-card {
+        padding: 25px 20px;
+      }
+      
+      .menu-list {
+        margin-top: 30px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        grid-column: 1;
+        grid-row: 2;
+        align-self: start;
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -166,20 +509,87 @@
 
   <main class="container">
     <div class="glass-card profile-container">
-      <div class="profile-avatar">👤</div>
-      <h2 style="margin-bottom: 30px;">My Profile</h2>
-      
-      <div id="profileLoading" class="spinner" style="margin: 20px auto;"></div>
-      
-      <div id="profileDetails" style="display: none;">
-        <!-- Content injected by JS -->
+      <div class="profile-header">
+        <div class="profile-avatar">👤</div>
+        <h2 class="profile-name" id="profileName">User</h2>
+        <p class="profile-email" id="profileEmail">loading...</p>
+        <p id="profileJoined" style="font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 15px;"></p>
+        <span id="memberBadge" class="join-badge">Member</span>
+        
+        <div style="display: flex; gap: 10px; margin-top: 25px; width: 100%; justify-content: center;">
+          <button onclick="exportData()" style="flex: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 10px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; transition: all 0.2s;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Export
+          </button>
+          <button onclick="deleteAccount()" style="flex: 1; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; padding: 10px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; transition: all 0.2s;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+            Delete
+          </button>
+        </div>
       </div>
+      
+      <div class="right-column-content">
+      <div class="stats-actions">
+        <button id="refreshStatsBtn" class="refresh-btn" title="Refresh Stats">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+        </button>
+      </div>
+
+      <!-- Fintech Stats Section -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-value" id="statTotalSpent"><div class="small-spinner"></div></span>
+          <span class="stat-label">Total Spent</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="statTxCount"><div class="small-spinner"></div></span>
+          <span class="stat-label">Transactions</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="statMonthsActive"><div class="small-spinner"></div></span>
+          <span class="stat-label">Months Active</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="statAvgMonthly"><div class="small-spinner"></div></span>
+          <span class="stat-label">Avg. Monthly</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="statTopCategory"><div class="small-spinner"></div></span>
+          <span class="stat-label">Top Category</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="statLastActive"><div class="small-spinner"></div></span>
+          <span class="stat-label">Last Active</span>
+        </div>
+      </div>
+
+      <!-- Recent Activity Timeline -->
+      <div class="timeline-section">
+        <div class="timeline-header">
+          <span>🕒</span> Recent Transactions
+        </div>
+        <div id="activityTimeline" class="timeline-list"></div>
+      </div>
+      </div>
+
     </div>
   </main>
 
+  <!-- Export Confirmation Modal -->
+  <div id="exportModal" class="modal hidden">
+    <div class="modal-content glass-card" style="width: 90%; max-width: 450px; text-align: center;">
+      <h3 style="color: #34d399; margin-top: 0;">Export Data</h3>
+      <p style="color: #fff; margin-bottom: 25px;">Do you want to download a backup of all your expenses?</p>
+      <div class="modal-actions">
+        <button onclick="confirmExport()" style="background: #34d399; color: #000;">Yes, Export</button>
+        <button class="cancel" onclick="closeExportModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Delete Confirmation Modal -->
   <div id="deleteModal" class="modal hidden">
-    <div class="modal-content glass-card" style="max-width: 400px; text-align: center;">
+    <div class="modal-content glass-card" style="width: 90%; max-width: 450px; text-align: center;">
       <h3 style="color: #EF4444; margin-top: 0;">Delete Account</h3>
       <p style="color: #fff; margin-bottom: 25px;">Are you sure you want to delete your account? This action cannot be undone.</p>
       <div class="modal-actions">
@@ -195,6 +605,141 @@
       localStorage.removeItem("token");
       window.location.href = "index.html";
     }
+  </script>
+  <script type="module">
+    import { apiRequest } from './js/api.js';
+
+    async function loadProfileStats() {
+      const btn = document.getElementById('refreshStatsBtn');
+      if (btn) btn.classList.add('refresh-spin');
+
+      // Show loading spinners on stats
+      const spinner = '<div class="small-spinner"></div>';
+      document.getElementById('statTotalSpent').innerHTML = spinner;
+      document.getElementById('statTxCount').innerHTML = spinner;
+      document.getElementById('statMonthsActive').innerHTML = spinner;
+      document.getElementById('statAvgMonthly').innerHTML = spinner;
+      document.getElementById('statTopCategory').innerHTML = spinner;
+      document.getElementById('statLastActive').innerHTML = spinner;
+      document.getElementById('activityTimeline').innerHTML = '<div style="opacity:0.5; font-size:0.9rem;">Loading...</div>';
+
+      // Also load user info
+      try {
+        const userRes = await apiRequest('/auth/me', 'GET', null, { skipLoader: true });
+        if (userRes && userRes.data) {
+          document.getElementById('profileName').innerText = userRes.data.name || "User";
+          document.getElementById('profileEmail').innerText = userRes.data.email || "";
+          if (userRes.data.createdAt) {
+            const created = new Date(userRes.data.createdAt);
+            const joinedDateStr = created.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+            document.getElementById('profileJoined').innerText = `Joined ${joinedDateStr}`;
+
+            // Calculate Member Badge
+            const now = new Date();
+            const diffDays = Math.floor((now - created) / (1000 * 60 * 60 * 24));
+            const badge = document.getElementById('memberBadge');
+            
+            if (diffDays > 365) {
+              badge.className = 'join-badge gold';
+              badge.innerText = 'Gold Member';
+            } else if (diffDays > 180) {
+              badge.className = 'join-badge silver';
+              badge.innerText = 'Silver Member';
+            } else if (diffDays > 30) {
+              badge.className = 'join-badge bronze';
+              badge.innerText = 'Bronze Member';
+            } else {
+              badge.innerText = 'New Member';
+            }
+          }
+        }
+      } catch (e) {
+        console.warn("Could not fetch user info", e);
+      }
+
+      try {
+        // Fetch all expenses to calculate stats
+        const res = await apiRequest('/expenses', 'GET', null, { skipLoader: true });
+        const expenses = res.data || [];
+
+        // 1. Total Spent
+        const totalSpent = expenses.reduce((sum, tx) => sum + Number(tx.amount), 0);
+        
+        // 2. Transaction Count
+        const txCount = expenses.length;
+
+        // 3. Months Active
+        const uniqueMonths = new Set(expenses.map(tx => {
+          return new Date(tx.date).toISOString().slice(0, 7); // YYYY-MM
+        }));
+        const monthsActive = uniqueMonths.size || 0;
+
+        // 4. Average Monthly Spending
+        const avgMonthly = monthsActive > 0 ? (totalSpent / monthsActive) : 0;
+
+        // 5. Top Category
+        const catTotals = {};
+        expenses.forEach(tx => {
+          catTotals[tx.category] = (catTotals[tx.category] || 0) + Number(tx.amount);
+        });
+        let topCategory = "N/A";
+        let maxVal = 0;
+        for (const [cat, val] of Object.entries(catTotals)) {
+          if (val > maxVal) {
+            maxVal = val;
+            topCategory = cat;
+          }
+        }
+
+        // 6. Last Active
+        let lastActive = "N/A";
+        if (expenses.length > 0) {
+          const lastDate = new Date(Math.max(...expenses.map(e => new Date(e.date))));
+          const diffDays = Math.floor((new Date() - lastDate) / (1000 * 60 * 60 * 24));
+          lastActive = diffDays === 0 ? "Today" : (diffDays === 1 ? "Yesterday" : `${diffDays} days ago`);
+        }
+
+        // 7. Recent Activity Timeline
+        const sortedExpenses = [...expenses].sort((a, b) => {
+          return new Date(b.date) - new Date(a.date);
+        }).slice(0, 5);
+        const timelineContainer = document.getElementById('activityTimeline');
+        
+        if (sortedExpenses.length === 0) {
+          timelineContainer.innerHTML = '<div style="opacity: 0.5; padding: 10px;">No recent activity found.</div>';
+          timelineContainer.style.borderLeft = 'none';
+        } else {
+          timelineContainer.style.borderLeft = '2px solid rgba(255, 255, 255, 0.1)';
+          timelineContainer.innerHTML = sortedExpenses.map(tx => `
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <span class="t-date">${new Date(tx.date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                <div class="t-row">
+                  <span class="t-desc">${tx.description || tx.category}</span>
+                  <span class="t-amount">-₹${Number(tx.amount).toLocaleString('en-IN')}</span>
+                </div>
+              </div>
+            </div>
+          `).join('');
+        }
+
+        // Update UI
+        document.getElementById('statTotalSpent').innerText = `₹${totalSpent.toLocaleString('en-IN')}`;
+        document.getElementById('statTxCount').innerText = txCount;
+        document.getElementById('statMonthsActive').innerText = monthsActive;
+        document.getElementById('statAvgMonthly').innerText = `₹${Math.round(avgMonthly).toLocaleString('en-IN')}`;
+        document.getElementById('statTopCategory').innerText = topCategory;
+        document.getElementById('statLastActive').innerText = lastActive;
+      } catch (err) {
+        console.error("Failed to load stats:", err);
+      } finally {
+        if (btn) btn.classList.remove('refresh-spin');
+      }
+    }
+    
+    document.getElementById('refreshStatsBtn').addEventListener('click', loadProfileStats);
+    loadProfileStats();
   </script>
 </body>
 </html>

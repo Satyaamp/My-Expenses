@@ -1,4 +1,4 @@
-import { apiRequest } from "./api.js";
+import { apiRequest, showToast } from "./api.js";
 
 const form = document.getElementById("loginForm");
 
@@ -20,6 +20,6 @@ form.addEventListener("submit", async (e) => {
     // Redirect to dashboard
     window.location.href = "dashboard.html";
   } catch (err) {
-    alert(err.message);
+    showToast(err.message, "error");
   }
 });

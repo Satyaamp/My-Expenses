@@ -361,7 +361,7 @@ async function loadRecentExpenses() {
       const date = `${String(d.getDate()).padStart(2, "0")}-${String(d.getMonth() + 1).padStart(2, "0")}-${d.getFullYear()}`;
 
       tr.innerHTML = `
-        <td>${date}</td>
+        <td style="white-space: nowrap;">${date}</td>
         <td style="font-weight: 600; color: #34d399;">₹${exp.amount}</td>
         <td>${exp.category}</td>
         <td style="opacity: 0.7;">${exp.description || "—"}</td>

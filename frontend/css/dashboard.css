@@ -241,6 +241,20 @@ body.modal-open {
   letter-spacing: 0.5px;
 }
 
+@media (max-width: 768px) {
+  .expense-table th,
+  .expense-table td {
+    padding: 10px 8px;
+    font-size: 0.85rem;
+  }
+
+  /* Hide Description column on mobile */
+  .expense-table th:nth-child(4),
+  .expense-table td:nth-child(4) {
+    display: none;
+  }
+}
+
 .expense-table tr:hover {
   background: rgba(255, 255, 255, 0.05);
 }
