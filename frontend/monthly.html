@@ -202,9 +202,35 @@
       transform: translateY(0);
     }
 
+    .mobile-tap-hint {
+      display: none;
+    }
+
     /* MOBILE FIX: Always show percentage because phones don't have hover */
     @media (max-width: 768px) {
-      .hover-percentage {
+      .mobile-tap-hint {
+        display: block;
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        opacity: 0.6;
+        color: rgba(255,255,255,0.8);
+        z-index: 10;
+        pointer-events: none;
+      }
+      
+      .summary-card.active-touch .mobile-tap-hint {
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+
+      /* Disable default hover behavior on mobile to prevent sticky hover issues */
+      .summary-card:hover .hover-percentage {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+      /* Only show when explicitly tapped */
+      .summary-card.active-touch .hover-percentage {
         opacity: 1;
         transform: translateY(0);
       }
@@ -323,6 +349,12 @@
     .day-bubble.active { background: #34d399; color: #000; border-color: #34d399; transform: translateY(-3px); box-shadow: 0 4px 12px rgba(52, 211, 153, 0.4); }
     .day-bubble.active span.day-dot { background: #000; }
 
+    .day-bubble.disabled {
+      opacity: 0.3;
+      pointer-events: none;
+      filter: grayscale(1);
+    }
+
     /* TRANSACTION COUNT BADGE */
     .tx-count-badge {
       margin-left: 5px;
@@ -344,6 +376,31 @@
       .tx-count-badge {
         display: none !important;
       }
+    }
+
+    /* ADD TRANSACTION BUTTON (Dynamic) */
+    .add-tx-btn {
+      width: 100%;
+      padding: 12px;
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px dashed rgba(34, 197, 94, 0.4);
+      border-radius: 12px;
+      color: #4ade80;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 12px;
+      transition: all 0.2s;
+    }
+    .add-tx-btn:hover {
+      background: rgba(34, 197, 94, 0.25);
+      transform: translateY(-2px);
+    }
+
+    /* DATE INPUT LOCK ICON */
+    .date-wrapper { position: relative; width: 100%; }
+    .date-wrapper svg {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      color: rgb(255, 255, 255); pointer-events: none;
     }
 
     /* =========================================
@@ -444,6 +501,7 @@
       <span class="desktop-text">Dashboard</span>
       <span class="mobile-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
     </button>
+    
     <button onclick="location.href='profile.html'" class="nav-btn" title="Profile">
       <span class="desktop-text">Profile</span>
       <span class="mobile-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
@@ -470,6 +528,7 @@
   <section class="summary">
     <div class="summary-card glass-card">
       <div class="liquid-bg liquid-blue" id="fillBudget"></div>
+      <div class="mobile-tap-hint"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>
       <div class="card-content">
         <h4>Budget Limit</h4>
         <p id="monthlyIncome">₹0</p>
@@ -478,6 +537,7 @@
     </div>
     <div class="summary-card glass-card">
       <div class="liquid-bg liquid-red" id="fillExpense"></div>
+      <div class="mobile-tap-hint"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>
       <div class="card-content">
         <h4>Expenses</h4>
         <p id="monthlyExpense">₹0</p>
@@ -486,6 +546,7 @@
     </div>
     <div class="summary-card glass-card">
       <div class="liquid-bg liquid-green" id="fillBalance"></div>
+      <div class="mobile-tap-hint"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>
       <div class="card-content">
         <h4>Remaining Balance</h4>
         <p id="monthlyBalance">₹0</p>
@@ -567,6 +628,31 @@
   </div>
 </div>
 
+<!-- ADD EXPENSE MODAL (For Daily View) -->
+<div id="expenseModal" class="modal hidden">
+  <div class="modal-content glass-card">
+    <h3>Add Expense</h3>
+
+    <input type="number" id="expenseAmount" placeholder="Amount (₹)" />
+    
+    <select id="expenseCategory">
+      <option value="">Select Category</option>
+      <!-- Populated by JS -->
+    </select>
+
+    <div class="date-wrapper">
+      <input type="date" id="expenseDate" disabled style="width: 100%; cursor: not-allowed; color: white; opacity: 1; -webkit-text-fill-color: white;" />
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+    </div>
+    <input type="text" id="expenseDesc" placeholder="Description (optional)" />
+
+    <div class="modal-actions">
+      <button onclick="saveExpense()">Save</button>
+      <button class="cancel" onclick="closeExpenseModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -576,6 +662,24 @@
     const btn = this;
     btn.classList.add('animating-download');
     setTimeout(() => btn.classList.remove('animating-download'), 1000);
+  });
+
+  // Mobile: Tap summary card to show percentage, tap elsewhere to hide
+  document.querySelectorAll('.summary-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (window.innerWidth <= 768) {
+        e.stopPropagation();
+        // Close others
+        document.querySelectorAll('.summary-card').forEach(c => {
+          if (c !== card) c.classList.remove('active-touch');
+        });
+        card.classList.toggle('active-touch');
+      }
+    });
+  });
+
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.summary-card').forEach(c => c.classList.remove('active-touch'));
   });
 </script>
 </body>

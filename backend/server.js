@@ -15,5 +15,4 @@ connectDB()
   .catch((err) => {
     console.error('DB connection failed:', err);
     process.exit(1);
-
   });

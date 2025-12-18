@@ -20,6 +20,22 @@ const modalMonthGrid = document.getElementById("modalMonthGrid");
 const monthTxCount = document.getElementById("monthTxCount");
 const downloadPdfBtn = document.getElementById("downloadPdfBtn");
 
+const EXPENSE_CATEGORIES = [
+  'Food', 
+  'Transport', 
+  'Groceries', 
+  'Rent', 
+  'Stationery', 
+  'Personal Care',
+  'Electric Bill',  
+  'Water Bill',  
+  'Cylinder',  
+  'Internet Bill',  
+  'EMI',            
+  'Recharge',      
+  'Other'
+];
+
 let currentMonthExpenses = [];
 let currentMonthCategories = [];
 let dailyChart = null;
@@ -38,6 +54,7 @@ currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0
 updateMobileMonthText();
 loadMonthlyData();
 setupCarousel();
+populateCategorySelect();
 
 /* Resize Listener for Chart Responsiveness */
 window.addEventListener("resize", () => {
@@ -270,6 +287,7 @@ async function loadDateWiseExpenses(month, year) {
   renderDailyChart(currentMonthExpenses, +year, +month);
   renderCumulativeChart(currentMonthExpenses, +year, +month);
   setupMobileDaySearch();
+  autoSelectDay(+year, +month);
 }
 
 /* ===============================
@@ -285,49 +303,116 @@ function setupMobileDaySearch() {
   const [year, month] = currentMonth.split("-");
   const daysInMonth = new Date(year, month, 0).getDate();
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = `${year}-${month}-${String(d).padStart(2, "0")}`;
     const hasTx = getTransactionsForDate(dateStr).length > 0;
 
+    // Check if date is in the future
+    const checkDate = new Date(Number(year), Number(month) - 1, d);
+    const isFuture = checkDate > today;
+
     const bubble = document.createElement("div");
-    bubble.className = `day-bubble ${hasTx ? "has-data" : ""}`;
+    bubble.className = `day-bubble ${hasTx ? "has-data" : ""} ${isFuture ? "disabled" : ""}`;
     bubble.dataset.day = d;
     bubble.innerHTML = `
       <span class="day-num">${d}</span>
       <span class="day-dot"></span>
     `;
 
-    bubble.onclick = () => {
-      document.querySelectorAll(".day-bubble").forEach(b => b.classList.remove("active"));
-      bubble.classList.add("active");
-      renderMobileTransactions(dateStr);
-      bubble.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-    };
+    if (!isFuture) {
+      bubble.onclick = () => {
+        document.querySelectorAll(".day-bubble").forEach(b => b.classList.remove("active"));
+        bubble.classList.add("active");
+        renderMobileTransactions(dateStr);
+        bubble.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+      };
+    }
 
     mobileDayScroll.appendChild(bubble);
   }
 }
 
-function renderMobileTransactions(dateStr) {
-  const tx = getTransactionsForDate(dateStr);
+function autoSelectDay(year, month) {
+  const today = new Date();
+  const isCurrentMonth = today.getFullYear() === year && (today.getMonth() + 1) === month;
+  
+  let targetDay = null;
 
-  if (!tx.length) {
-    mobileListContainer.innerHTML =
-      `<p class="text-muted">No transactions found for this date.</p>`;
-    return;
+  if (isCurrentMonth) {
+    targetDay = today.getDate();
+  } else if (currentMonthExpenses.length > 0) {
+    // Find the latest day with a transaction
+    let maxDay = 0;
+    currentMonthExpenses.forEach(e => {
+      const d = new Date(e.date).getDate();
+      if (d > maxDay) maxDay = d;
+    });
+    if (maxDay > 0) targetDay = maxDay;
   }
 
-  mobileListContainer.innerHTML = tx.map(t => `
-    <div class="transaction-item">
-      <div class="transaction-top">
-        <span class="transaction-amount expense">-₹${t.amount}</span>
-        <span class="transaction-category">${t.category}</span>
-      </div>
-      <div class="transaction-description">
-        ${t.description || "No description"}
-      </div>
+  if (targetDay) {
+    const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(targetDay).padStart(2, "0")}`;
+    
+    // 1. Update Mobile View
+    const bubble = document.querySelector(`.day-bubble[data-day="${targetDay}"]`);
+    if (bubble) {
+      document.querySelectorAll(".day-bubble").forEach(b => b.classList.remove("active"));
+      bubble.classList.add("active");
+      renderMobileTransactions(dateStr);
+      setTimeout(() => {
+        bubble.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+      }, 100);
+    }
+
+    // 2. Update Desktop View
+    const cell = document.querySelector(`.calendar-day[data-date="${dateStr}"]`);
+    if (cell) {
+      selectDate(dateStr, cell);
+    }
+  }
+}
+
+function renderMobileTransactions(dateStr) {
+  const tx = getTransactionsForDate(dateStr);
+  const isToday = dateStr === new Date().toISOString().split('T')[0];
+  
+  const totalAmount = tx.reduce((sum, t) => sum + Number(t.amount), 0);
+  const dateText = new Date(dateStr).toDateString();
+
+  let html = "";
+
+  html += `
+    <div class="day-header-card">
+      <div class="day-header-date">${dateText}</div>
+      <div class="day-header-summary">${tx.length} Txns • Total: ₹${totalAmount}</div>
     </div>
-  `).join("");
+  `;
+
+  // Dynamic Add Button for Today
+  if (isToday) {
+    html += `<button onclick="openAddExpenseModal('${dateStr}')" class="add-tx-btn">➕ Add Transaction</button>`;
+  }
+
+  if (!tx.length) {
+    html += `<p class="text-muted">No transactions found for this date.</p>`;
+  } else {
+    html += tx.map(t => `
+      <div class="transaction-item">
+        <div class="transaction-top">
+          <span class="transaction-amount expense">-₹${t.amount}</span>
+          <span class="transaction-category">${t.category}</span>
+        </div>
+        <div class="transaction-description">
+          ${t.description || "No description"}
+        </div>
+      </div>
+    `).join("");
+  }
+
+  mobileListContainer.innerHTML = html;
 }
 
 /* ===============================
@@ -417,23 +502,30 @@ function selectDate(dateStr, cell) {
   const badgeStyle = "margin-left: 10px; background: rgba(250, 204, 21, 0.15); border: 1px solid rgba(250, 204, 21, 0.3); color: #fef9c3; border-radius: 12px; padding: 4px 10px; font-size: 0.8rem; vertical-align: middle;";
   document.getElementById("selectedDateTitle").innerHTML = `${dateText} <span style="${badgeStyle}">${tx.length} Txns</span> <span style="${badgeStyle}">Total: ₹${totalAmount}</span>`;
 
-  if (!tx.length) {
-    list.innerHTML =
-      `<div class="empty-state"><p>📭</p><p>No transactions</p></div>`;
-    return;
+  const isToday = dateStr === new Date().toISOString().split('T')[0];
+  let html = "";
+
+  if (isToday) {
+    html += `<button onclick="openAddExpenseModal('${dateStr}')" class="add-tx-btn">➕ Add Transaction</button>`;
   }
 
-  list.innerHTML = tx.map(t => `
-    <div class="transaction-item">
-      <div class="transaction-top">
-        <span class="transaction-amount expense">-₹${t.amount}</span>
-        <span class="transaction-category">${t.category}</span>
+  if (!tx.length) {
+    html += `<div class="empty-state"><p>📭</p><p>No transactions</p></div>`;
+  } else {
+    html += tx.map(t => `
+      <div class="transaction-item">
+        <div class="transaction-top">
+          <span class="transaction-amount expense">-₹${t.amount}</span>
+          <span class="transaction-category">${t.category}</span>
+        </div>
+        <div class="transaction-description">
+          ${t.description || "No description"}
+        </div>
       </div>
-      <div class="transaction-description">
-        ${t.description || "No description"}
-      </div>
-    </div>
-  `).join("");
+    `).join("");
+  }
+
+  list.innerHTML = html;
 }
 
 /* ===============================
@@ -991,7 +1083,6 @@ async function downloadMonthlyReport() {
     return;
   }
 
-  showToast("Downloading report...");
 
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
@@ -1115,20 +1206,140 @@ async function downloadMonthlyReport() {
       (categoryTotals[tx.category] || 0) + tx.amount;
   });
 
-  const categoryTable = Object.entries(categoryTotals)
-    .sort(([, a], [, b]) => b - a) // Sort by amount, descending
-    .map(([cat, amt]) => [
-      cat, `Rs. ${formatAmount(amt)}`
-    ]);
+  /* ===============================
+     CHART GENERATION
+  ================================ */
 
-  doc.autoTable({
-    startY: 82,
-    head: [["Category", "Total"]],
-    body: categoryTable,
-    theme: "striped",
-    headStyles: { fillColor: [22, 163, 74], textColor: 255 },
-    styles: { fontSize: 10 }
+  let chartImg = null;
+  try {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1200; // High resolution for print
+    canvas.height = 600;
+    const ctx = canvas.getContext("2d");
+
+    const sortedCats = Object.entries(categoryTotals).sort(([, a], [, b]) => b - a);
+    const chartLabels = sortedCats.map(([k, v]) => `${k} - Rs. ${formatAmount(v)}`);
+    const chartData = sortedCats.map(([, v]) => v);
+
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: chartLabels,
+        datasets: [{
+          data: chartData,
+          backgroundColor: ["#7C7CFF", "#22C55E", "#FACC15", "#EF4444", "#38BDF8", "#A78BFA", "#FB923C", "#EC4899"],
+          borderWidth: 2,
+          borderColor: '#ffffff'
+        }]
+      },
+      options: {
+        responsive: false,
+        animation: false,
+        cutout: '45%',
+        plugins: {
+          legend: { position: 'right', labels: { color: '#1f2937', font: { size: 24, family: 'Helvetica' }, padding: 30, boxWidth: 30 } },
+          title: { display: true, text: 'Expense Distribution', color: '#111827', font: { size: 32, weight: 'bold', family: 'Helvetica' }, padding: { bottom: 30 } }
+        },
+        layout: { padding: 40 }
+      }
+    });
+
+    // Fill background white (Chart.js is transparent by default)
+    ctx.globalCompositeOperation = 'destination-over';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    chartImg = canvas.toDataURL("image/png");
+  } catch (err) { console.warn("Chart generation failed:", err); }
+
+  let nextY = 85;
+  if (chartImg) {
+    const pageHeight = doc.internal.pageSize.getHeight();
+    if (nextY + 80 > pageHeight - 20) { doc.addPage(); nextY = 20; }
+    doc.addImage(chartImg, 'PNG', 15, nextY, 180, 80);
+    nextY += 90;
+  }
+
+  /* ===============================
+     DAY OF WEEK BAR CHART
+  ================================ */
+  let barChartImg = null;
+  const dayOfWeekTotals = new Array(7).fill(0);
+  currentMonthExpenses.forEach(tx => {
+    const day = new Date(tx.date).getDay(); // 0=Sun, 1=Mon, ...
+    dayOfWeekTotals[day] += tx.amount;
   });
+
+  try {
+    const barCanvas = document.createElement("canvas");
+    barCanvas.width = 1200;
+    barCanvas.height = 600;
+    const barCtx = barCanvas.getContext("2d");
+
+    new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        datasets: [{
+          label: 'Total Spending',
+          data: dayOfWeekTotals,
+          backgroundColor: 'rgba(34, 197, 94, 0.7)',
+          borderColor: 'rgba(34, 197, 94, 1)',
+          borderWidth: 2,
+          borderRadius: 6,
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: false,
+        animation: false,
+        plugins: {
+          legend: { display: false },
+          title: { display: true, text: 'Spending by Day of the Week', color: '#111827', font: { size: 32, weight: 'bold', family: 'Helvetica' }, padding: { bottom: 30 } }
+        },
+        scales: {
+          x: { beginAtZero: true, ticks: { color: '#374151', font: { size: 20, family: 'Helvetica' }, callback: (value) => `Rs. ${value}` }, grid: { color: '#e5e7eb' } },
+          y: { ticks: { color: '#1f2937', font: { size: 24, family: 'Helvetica' } }, grid: { display: false } }
+        },
+        layout: { padding: 40 }
+      }
+    });
+
+    barCtx.globalCompositeOperation = 'destination-over';
+    barCtx.fillStyle = '#ffffff';
+    barCtx.fillRect(0, 0, barCanvas.width, barCanvas.height);
+    barChartImg = barCanvas.toDataURL("image/png");
+  } catch (err) { console.warn("Bar chart generation failed:", err); }
+
+  if (barChartImg) {
+    const pageHeight = doc.internal.pageSize.getHeight();
+    if (nextY + 90 > pageHeight - 20) { doc.addPage(); nextY = 20; }
+    
+    // Chart on Left (Reduced width to make room for text)
+    doc.addImage(barChartImg, 'PNG', 15, nextY, 120, 70);
+
+    // Calculations on Right
+    doc.setFontSize(10);
+    doc.setTextColor(0);
+    doc.setFont("helvetica", "bold");
+    doc.text("Weekly Breakdown", 145, nextY + 10);
+    
+    doc.setFont("helvetica", "normal");
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    let textY = nextY + 20;
+    days.forEach((day, index) => {
+      const amount = dayOfWeekTotals[index];
+      doc.text(`${day}: Rs. ${formatAmount(amount)}`, 145, textY);
+      textY += 7;
+    });
+
+    nextY += 85;
+  }
+
+  const pageHeight = doc.internal.pageSize.getHeight();
+  if (nextY > pageHeight - 40) {
+    doc.addPage();
+    nextY = 20;
+  }
 
   /* ===============================
      TRANSACTIONS TABLE
@@ -1136,19 +1347,18 @@ async function downloadMonthlyReport() {
 
   const tableData = currentMonthExpenses.map(tx => [
     new Date(tx.date).toLocaleDateString("en-IN"),
-    tx.category,
-    tx.description || "-",
-    `Rs. ${formatAmount(tx.amount)}`
+    `Rs. ${formatAmount(tx.amount)}`,
+    tx.category
   ]);
 
   doc.autoTable({
-    startY: doc.lastAutoTable.finalY + 10,
-    head: [["Date", "Category", "Description", "Amount"]],
+    startY: nextY,
+    head: [["Date", "Amount", "Category"]],
     body: tableData,
     theme: "grid",
     headStyles: { fillColor: [20, 83, 45], textColor: 255 },
     columnStyles: {
-      3: { halign: "right", fontStyle: "bold", textColor: [220, 38, 38] }
+      1: { halign: "right", fontStyle: "bold", textColor: [220, 38, 38] }
     },
 
     /* ===============================
@@ -1179,6 +1389,66 @@ async function downloadMonthlyReport() {
      SAVE FILE
   ================================ */
 
-  doc.save(`DhanRekha_Monthly_Report_${monthName}_${year}.pdf`);
-  showToast("Report downloaded successfully!", "success");
+  doc.save(`DhanRekha_Monthly_Report_${userName}_${monthName}_${year}.pdf`);
+  showToast("Downloading report...", "success");
 }
+
+/* ===============================
+   ADD EXPENSE LOGIC (Dynamic)
+================================ */
+
+function populateCategorySelect() {
+  const select = document.getElementById("expenseCategory");
+  if (!select) return;
+  select.innerHTML = '<option value="" disabled selected>Select Category</option>';
+  EXPENSE_CATEGORIES.forEach(cat => {
+    const option = document.createElement("option");
+    option.value = cat;
+    option.textContent = cat;
+    select.appendChild(option);
+  });
+}
+
+window.openAddExpenseModal = function(dateStr) {
+  const modal = document.getElementById("expenseModal");
+  const dateInput = document.getElementById("expenseDate");
+  
+  if(modal && dateInput) {
+    dateInput.value = dateStr; // Pre-fill selected date
+    modal.classList.remove("hidden");
+    document.body.classList.add("modal-open");
+  }
+};
+
+window.closeExpenseModal = function() {
+  const modal = document.getElementById("expenseModal");
+  if(modal) {
+    modal.classList.add("hidden");
+    document.body.classList.remove("modal-open");
+    // Reset fields
+    document.getElementById("expenseAmount").value = "";
+    document.getElementById("expenseDesc").value = "";
+    document.getElementById("expenseCategory").value = "";
+  }
+};
+
+window.saveExpense = async function() {
+  const amount = document.getElementById("expenseAmount").value;
+  const category = document.getElementById("expenseCategory").value;
+  const date = document.getElementById("expenseDate").value;
+  const description = document.getElementById("expenseDesc").value;
+
+  if (!amount || !category || !date) {
+    showToast("Amount and category are required", "error");
+    return;
+  }
+
+  try {
+    await apiRequest("/expenses", "POST", { amount, category, date, description });
+    closeExpenseModal();
+    showToast("Expense added successfully", "success");
+    loadMonthlyData(); // Refresh data
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+};
