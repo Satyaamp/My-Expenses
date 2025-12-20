@@ -316,9 +316,10 @@
       font-weight: 700;
       border-color: #34d399;
     }
-    .month-tile:disabled {
+    .month-tile.disabled {
       opacity: 0.3;
       cursor: not-allowed;
+      pointer-events: none;
     }
 
     /* HORIZONTAL DAY SCROLL (Mobile) */
@@ -691,10 +692,9 @@
   import { apiRequest } from './js/api.js';
 
   let expensesSet = new Set();
-  let expensesLoaded = false;
 
   async function loadExpensesForGrid() {
-    if (expensesLoaded) return;
+    expensesSet.clear();
     try {
       const res = await apiRequest('/expenses', 'GET', null, { skipLoader: true });
       if (res.data) {
@@ -704,7 +704,6 @@
           const key = `${d.getFullYear()}-${d.getMonth()}`; 
           expensesSet.add(key);
         });
-        expensesLoaded = true;
         highlightMonths();
       }
     } catch (e) {
@@ -725,8 +724,10 @@
       const key = `${year}-${i}`;
       if (expensesSet.has(key)) {
         tiles[i].classList.add('has-data');
+        tiles[i].classList.remove('disabled');
       } else {
         tiles[i].classList.remove('has-data');
+        tiles[i].classList.add('disabled');
       }
     }
   }
