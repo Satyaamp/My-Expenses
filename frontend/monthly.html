@@ -402,13 +402,6 @@
       transform: translateY(-2px);
     }
 
-    /* DATE INPUT LOCK ICON */
-    .date-wrapper { position: relative; width: 100%; }
-    .date-wrapper svg {
-      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-      color: rgb(255, 255, 255); pointer-events: none;
-    }
-
     /* =========================================
        DAILY TRANSACTIONS LIST STYLING
     ========================================= */
@@ -531,6 +524,16 @@
     </button>
   </div>
 
+  <!-- Empty State (Hidden by default) -->
+  <div id="noDataState" class="glass-card" style="display: none; text-align: center; padding: 50px 20px; margin-top: 20px;">
+    <div style="font-size: 4rem; margin-bottom: 20px; opacity: 0.8;">📭</div>
+    <h3 style="font-size: 1.5rem; margin-bottom: 10px; color: #fff;">No Transactions Found</h3>
+    <p style="color: rgba(255,255,255,0.6); font-size: 1rem;">There are no income or expense records for <span id="noDataMonth" style="color: #34d399; font-weight: 600;"></span></p>
+    <button onclick="openEmptyStateModal()" style="margin-top: 25px; padding: 12px 24px; background: #34d399; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: transform 0.2s;">
+      Add First Transaction
+    </button>
+  </div>
+
   <section class="summary">
     <div class="summary-card glass-card">
       <div class="liquid-bg liquid-blue" id="fillBudget"></div>
@@ -647,8 +650,7 @@
     </select>
 
     <div class="date-wrapper">
-      <input type="date" id="expenseDate" disabled style="width: 100%; cursor: not-allowed; color: white; opacity: 1; -webkit-text-fill-color: white;" />
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      <input type="date" id="expenseDate" disabled style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; color-scheme: dark; cursor: not-allowed; opacity: 1; -webkit-text-fill-color: white;" />
     </div>
     <input type="text" id="expenseDesc" placeholder="Description (optional)" />
 
@@ -742,6 +744,63 @@
 
   // Load data when opening modal
   document.getElementById('pageMonthTitle')?.addEventListener('click', loadExpensesForGrid);
+
+  // Logic to toggle Empty State based on Transaction Count
+  function checkEmptyState() {
+    const countText = document.getElementById('monthTxCount')?.innerText || "";
+    const match = countText.match(/(\d+)/);
+    const count = match ? parseInt(match[1]) : 0;
+    
+    const noDataState = document.getElementById('noDataState');
+    const sections = document.querySelectorAll('.summary, .mobile-date-view, .analytics-carousel, .date-wise');
+    const monthTitle = document.getElementById('pageMonthTitle')?.innerText || "this month";
+
+    if (count === 0) {
+      sections.forEach(el => el.style.display = 'none');
+      if (noDataState) {
+        noDataState.style.display = 'block';
+        document.getElementById('noDataMonth').innerText = monthTitle;
+      }
+    } else {
+      sections.forEach(el => el.style.display = '');
+      if (noDataState) noDataState.style.display = 'none';
+    }
+  }
+
+  const txCountObserver = new MutationObserver(checkEmptyState);
+  const txCountNode = document.getElementById('monthTxCount');
+  const titleNode = document.getElementById('pageMonthTitle');
+  
+  if (txCountNode) txCountObserver.observe(txCountNode, { childList: true, characterData: true, subtree: true });
+  if (titleNode) txCountObserver.observe(titleNode, { childList: true, characterData: true, subtree: true });
+  
+  // Initial check
+  setTimeout(checkEmptyState, 100);
+
+  // Helper to open modal with correct date for Empty State
+  window.openEmptyStateModal = function() {
+    const modal = document.getElementById('expenseModal');
+    const dateInput = document.getElementById('expenseDate');
+    const title = document.getElementById('pageMonthTitle').innerText;
+    
+    // Default to 1st of the viewed month
+    let targetDate = new Date(title + " 1");
+    const today = new Date();
+
+    // If viewing current month, use today's date
+    if (!isNaN(targetDate.getTime())) {
+      if (today.getMonth() === targetDate.getMonth() && today.getFullYear() === targetDate.getFullYear()) {
+        targetDate = today;
+      }
+      // Format YYYY-MM-DD
+      const dateStr = targetDate.getFullYear() + '-' + String(targetDate.getMonth() + 1).padStart(2, '0') + '-' + String(targetDate.getDate()).padStart(2, '0');
+      dateInput.value = dateStr;
+    }
+    
+    dateInput.disabled = false; // Enable for editing
+    dateInput.style.cursor = 'text';
+    modal.classList.remove('hidden');
+  }
 </script>
 </body>
 </html>
