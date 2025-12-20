@@ -1,6 +1,7 @@
 const service = require('../services/expense.service');
 const { success } = require('../utils/response.util');
 const Expense = require('../models/expense.model'); // 👈 Add this line at the top!
+const mongoose = require('mongoose');
 
 exports.create = async (req, res) =>
   success(res, await service.createExpense(req.user.id, req.body));
@@ -82,4 +83,22 @@ exports.getByMonthYear = async (req, res) => {
   );
 
   success(res, expenses, "Monthly expenses fetched");
+};
+
+exports.yearly = async (req, res) => {
+  try {
+    const stats = await Expense.aggregate([
+      { $match: { userId: new mongoose.Types.ObjectId(req.user.id) } },
+      {
+        $group: {
+          _id: { $year: "$date" },
+          totalExpense: { $sum: "$amount" }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+    success(res, stats, 'Yearly expenses fetched');
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
 };
