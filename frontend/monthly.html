@@ -305,6 +305,11 @@
     .month-tile:hover {
       background: rgba(255, 255, 255, 0.15);
     }
+    .month-tile.has-data {
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.15);
+    }
     .month-tile.selected {
       background: #34d399;
       color: #000;
@@ -681,6 +686,61 @@
   document.addEventListener('click', () => {
     document.querySelectorAll('.summary-card').forEach(c => c.classList.remove('active-touch'));
   });
+</script>
+<script type="module">
+  import { apiRequest } from './js/api.js';
+
+  let expensesSet = new Set();
+  let expensesLoaded = false;
+
+  async function loadExpensesForGrid() {
+    if (expensesLoaded) return;
+    try {
+      const res = await apiRequest('/expenses', 'GET', null, { skipLoader: true });
+      if (res.data) {
+        res.data.forEach(tx => {
+          const d = new Date(tx.date);
+          // Format: YYYY-M (0-indexed month to match loop index 0-11)
+          const key = `${d.getFullYear()}-${d.getMonth()}`; 
+          expensesSet.add(key);
+        });
+        expensesLoaded = true;
+        highlightMonths();
+      }
+    } catch (e) {
+      console.warn("Could not load expenses for grid highlight", e);
+    }
+  }
+
+  function highlightMonths() {
+    const yearText = document.getElementById('modalYearDisplay')?.innerText;
+    if (!yearText) return;
+    const year = parseInt(yearText);
+    
+    const grid = document.getElementById('modalMonthGrid');
+    if (!grid) return;
+    const tiles = grid.children;
+    
+    for (let i = 0; i < tiles.length; i++) {
+      const key = `${year}-${i}`;
+      if (expensesSet.has(key)) {
+        tiles[i].classList.add('has-data');
+      } else {
+        tiles[i].classList.remove('has-data');
+      }
+    }
+  }
+
+  // Watch for grid population or year changes
+  const observer = new MutationObserver(() => highlightMonths());
+  const grid = document.getElementById('modalMonthGrid');
+  if (grid) observer.observe(grid, { childList: true, subtree: true });
+  
+  const yearDisplay = document.getElementById('modalYearDisplay');
+  if (yearDisplay) observer.observe(yearDisplay, { childList: true, characterData: true, subtree: true });
+
+  // Load data when opening modal
+  document.getElementById('pageMonthTitle')?.addEventListener('click', loadExpensesForGrid);
 </script>
 </body>
 </html>
