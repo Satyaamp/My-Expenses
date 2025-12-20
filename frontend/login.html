@@ -132,6 +132,18 @@
       <button type="submit">Login</button>
     </form>
 
+    <div style="margin-top: 20px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; overflow: hidden;">
+      <div onclick="toggleDemo()" style="padding: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none;">
+        <h4 style="margin: 0; font-size: 1rem;">Try Demo Account</h4>
+        <span id="demoArrow" style="transition: transform 0.3s;">▼</span>
+      </div>
+      <div id="demoContent" style="display: none; padding: 0 15px 15px 15px; border-top: 1px solid rgba(255, 255, 255, 0.05);">
+        <p style="margin: 10px 0 5px 0; font-size: 0.9rem; opacity: 0.9;">Email: <strong>abc@gmail.com</strong></p>
+        <p style="margin: 5px 0; font-size: 0.9rem; opacity: 0.9;">Password: <strong>1234</strong></p>
+        <button type="button" onclick="fillDemo()" style="margin-top: 10px; background: rgba(59, 130, 246, 0.8);">Login with Demo</button>
+      </div>
+    </div>
+
     <div class="links">
       <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
       <p style="margin-top: 10px;"><a href="index.html">← Back to Home</a></p>
@@ -148,6 +160,24 @@
       } else {
         passwordInput.type = 'password';
         toggleIcon.textContent = '👁️';
+      }
+    }
+
+    function fillDemo() {
+      document.getElementById('email').value = 'abc@gmail.com';
+      document.getElementById('password').value = '1234';
+      document.getElementById('loginForm').requestSubmit();
+    }
+
+    function toggleDemo() {
+      const content = document.getElementById('demoContent');
+      const arrow = document.getElementById('demoArrow');
+      if (content.style.display === 'none') {
+        content.style.display = 'block';
+        arrow.style.transform = 'rotate(180deg)';
+      } else {
+        content.style.display = 'none';
+        arrow.style.transform = 'rotate(0deg)';
       }
     }
   </script>
