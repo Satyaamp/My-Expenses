@@ -635,7 +635,7 @@
           document.getElementById('profileEmail').innerText = userRes.data.email || "";
 
           // Disable delete for demo account
-          if (userRes.data.email === 'abc@gmail.com') {
+          if (userRes.data.email === 'demouser@mail.com') {
             const deleteBtn = document.getElementById('deleteAccountBtn');
             if (deleteBtn) {
               deleteBtn.removeAttribute('onclick');
