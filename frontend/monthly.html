@@ -514,7 +514,7 @@
     <button id="prevMonthBtn" class="month-nav-btn" title="Previous Month">❮</button>
     <h2 id="pageMonthTitle" style="color: #fff; margin: 0; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.2); cursor: pointer; text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 4px;" title="Click to jump to a specific month"></h2>
     <button id="nextMonthBtn" class="month-nav-btn" title="Next Month">❯</button>
-    <div id="monthTxCount" class="tx-count-badge"><span>📊</span> 0 Txns</div>
+    <div id="monthTxCount" class="tx-count-badge"><span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></span> 0 Txns</div>
     <button id="downloadPdfBtn" class="nav-btn" style="width: 38px; height: 38px; margin-left: 5px;" title="Download Report">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -526,7 +526,9 @@
 
   <!-- Empty State (Hidden by default) -->
   <div id="noDataState" class="glass-card" style="display: none; text-align: center; padding: 50px 20px; margin-top: 20px;">
-    <div style="font-size: 4rem; margin-bottom: 20px; opacity: 0.8;">📭</div>
+    <div style="margin-bottom: 20px; opacity: 0.8;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line></svg>
+    </div>
     <h3 style="font-size: 1.5rem; margin-bottom: 10px; color: #fff;">No Transactions Found</h3>
     <p style="color: rgba(255,255,255,0.6); font-size: 1rem;">There are no income or expense records for <span id="noDataMonth" style="color: #34d399; font-weight: 600;"></span></p>
     <button onclick="openEmptyStateModal()" style="margin-top: 25px; padding: 12px 24px; background: #34d399; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: transform 0.2s;">
