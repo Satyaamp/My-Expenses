@@ -783,19 +783,30 @@
     const dateInput = document.getElementById('expenseDate');
     const title = document.getElementById('pageMonthTitle').innerText;
     
-    // Default to 1st of the viewed month
-    let targetDate = new Date(title + " 1");
-    const today = new Date();
+    // Parse the currently viewed month
+    let viewDate = new Date(title + " 1");
+    
+    // Calculate Min/Max for this month to restrict selection
+    const year = viewDate.getFullYear();
+    const month = viewDate.getMonth();
+    const lastDay = new Date(year, month + 1, 0).getDate();
+    
+    const minStr = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+    const maxStr = `${year}-${String(month + 1).padStart(2, '0')}-${lastDay}`;
+    
+    dateInput.min = minStr;
+    dateInput.max = maxStr;
 
-    // If viewing current month, use today's date
-    if (!isNaN(targetDate.getTime())) {
-      if (today.getMonth() === targetDate.getMonth() && today.getFullYear() === targetDate.getFullYear()) {
-        targetDate = today;
-      }
-      // Format YYYY-MM-DD
-      const dateStr = targetDate.getFullYear() + '-' + String(targetDate.getMonth() + 1).padStart(2, '0') + '-' + String(targetDate.getDate()).padStart(2, '0');
-      dateInput.value = dateStr;
+    const today = new Date();
+    let initialDate = viewDate; // Default to 1st
+
+    // If current month is being viewed, default to Today
+    if (today.getFullYear() === year && today.getMonth() === month) {
+      initialDate = today;
     }
+
+    const valStr = `${initialDate.getFullYear()}-${String(initialDate.getMonth() + 1).padStart(2, '0')}-${String(initialDate.getDate()).padStart(2, '0')}`;
+    dateInput.value = valStr;
     
     dateInput.disabled = false; // Enable for editing
     dateInput.style.cursor = 'text';
