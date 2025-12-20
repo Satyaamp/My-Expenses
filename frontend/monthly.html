@@ -548,7 +548,12 @@
       <div class="liquid-bg liquid-red" id="fillExpense"></div>
       <div class="mobile-tap-hint"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>
       <div class="card-content">
-        <h4>Expenses</h4>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h4 style="margin: 0;">Expenses</h4>
+          <button onclick="event.stopPropagation(); openEmptyStateModal()" style="background: rgba(11, 246, 86, 0.399); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgb(19, 235, 203); padding: 0; transition: background 0.2s;" title="Add Expense">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </button>
+        </div>
         <p id="monthlyExpense">₹0</p>
         <p class="hover-percentage" id="pctExpense">0%</p>
       </div>
