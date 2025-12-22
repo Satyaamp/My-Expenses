@@ -1,4 +1,3 @@
-
 const chartColors = {
   primary: "#7C7CFF",
   success: "#22C55E",
@@ -13,22 +12,9 @@ const chartColors = {
 
 import { apiRequest } from "./api.js";
 
-// Categories from backend/src/models/expense.model.js
-const EXPENSE_CATEGORIES = [
-  'Food', 
-  'Transport', 
-  'Groceries', 
-  'Rent', 
-  'Stationery', 
-  'Personal Care',
-  'Electric Bill',  
-  'Water Bill',  
-  'Cylinder',  
-  'Internet Bill',  
-  'EMI',            
-  'Recharge',      
-  'Other'
-];
+
+
+
 
 // Global Chart Instances
 let categoryChart = null;
@@ -171,18 +157,25 @@ function handleChartDataState(canvasId, hasData) {
 /* ===============================
    POPULATE CATEGORIES
 ================================ */
-function populateCategorySelect() {
+async function populateCategorySelect() {
   const select = document.getElementById("expenseCategory");
   if (!select) return;
 
-  select.innerHTML = '<option value="" disabled selected>Select Category</option>';
-  
-  EXPENSE_CATEGORIES.forEach(cat => {
-    const option = document.createElement("option");
-    option.value = cat;
-    option.textContent = cat;
-    select.appendChild(option);
-  });
+  try {
+    const res = await apiRequest("/expenses/categories");
+    select.innerHTML = '<option value="" disabled selected>Select Category</option>';
+    
+    if (res.data && Array.isArray(res.data)) {
+      res.data.forEach(cat => {
+        const option = document.createElement("option");
+        option.value = cat;
+        option.textContent = cat;
+        select.appendChild(option);
+      });
+    }
+  } catch (err) {
+    console.error("Failed to load categories", err);
+  }
 }
 
 /* ===============================

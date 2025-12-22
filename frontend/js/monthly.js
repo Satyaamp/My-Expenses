@@ -20,21 +20,6 @@ const modalMonthGrid = document.getElementById("modalMonthGrid");
 const monthTxCount = document.getElementById("monthTxCount");
 const downloadPdfBtn = document.getElementById("downloadPdfBtn");
 
-const EXPENSE_CATEGORIES = [
-  'Food', 
-  'Transport', 
-  'Groceries', 
-  'Rent', 
-  'Stationery', 
-  'Personal Care',
-  'Electric Bill',  
-  'Water Bill',  
-  'Cylinder',  
-  'Internet Bill',  
-  'EMI',            
-  'Recharge',      
-  'Other'
-];
 
 let currentMonthExpenses = [];
 let currentMonthCategories = [];
@@ -1397,16 +1382,24 @@ async function downloadMonthlyReport() {
    ADD EXPENSE LOGIC (Dynamic)
 ================================ */
 
-function populateCategorySelect() {
+async function populateCategorySelect() {
   const select = document.getElementById("expenseCategory");
   if (!select) return;
-  select.innerHTML = '<option value="" disabled selected>Select Category</option>';
-  EXPENSE_CATEGORIES.forEach(cat => {
-    const option = document.createElement("option");
-    option.value = cat;
-    option.textContent = cat;
-    select.appendChild(option);
-  });
+
+  try {
+    const res = await apiRequest("/expenses/categories");
+    select.innerHTML = '<option value="" disabled selected>Select Category</option>';
+    if (res.data && Array.isArray(res.data)) {
+      res.data.forEach(cat => {
+        const option = document.createElement("option");
+        option.value = cat;
+        option.textContent = cat;
+        select.appendChild(option);
+      });
+    }
+  } catch (err) {
+    console.error("Failed to load categories", err);
+  }
 }
 
 window.openAddExpenseModal = function(dateStr) {
